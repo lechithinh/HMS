@@ -4,7 +4,12 @@ import pandas as pd
 import numpy as np
 from st_aggrid import AgGrid
 import datetime
+from streamlit_extras.stateful_button import button
+from streamlit_card import card
+from streamlit_extras.metric_cards import style_metric_cards
 
+
+st.set_page_config(layout="wide")
 
 #SideBar
 with st.sidebar:
@@ -18,10 +23,10 @@ with st.sidebar:
 
 if selected == "Dashboard":
     # create three columns for cards
-    card1, card2, card3 = st.columns(3)
-    card1.metric("Rooms Occupied ", "30", "-10%")
-    card2.metric("Expected Arrivals", "9", "-8%")
-    card3.metric("Expected Departure", "5", "4%")
+    card_1, card_2, card_3 = st.columns(3)
+    card_1.metric("Rooms Occupied ", "30", "-10%")
+    card_2.metric("Expected Arrivals", "9", "-8%")
+    card_3.metric("Expected Departure", "5", "4%")
     
     st.divider()
     # create two columns for charts
@@ -39,7 +44,88 @@ if selected == "Dashboard":
         columns=["a", "b", "c"])
         st.bar_chart(chart_data)
 elif selected == "Rooms":
-    st.write("Rooms")
+    tab1, tab2 = st.tabs(["**VIEW ROOM INFORMATION**", "**ADD A ROOM**"])
+    with tab1:
+        col1, col2, col3 = st.columns(3)
+        col1.metric(label="Gain", value=5000, delta=1000)
+        col2.metric(label="Loss", value=5000, delta=-1000)
+        col3.metric(label="No Change", value=5000, delta=0)
+        style_metric_cards(border_left_color = '#F39D9D')
+        
+     
+    
+        def updatedata():
+            #Update the database
+            pass
+        
+        seeding_data = {    "Edit": [False,False,False,False,False,False,False],
+                            'Room ID': ["101", "102", "103", "104", "105", "106", "107"], 
+                           'Room Name': ["VIP1", "VIP2", "VIP3", "VIP4", "VIP5", "VIP6", "VIP7"], 
+                           'Type': ["lechithinh@gmail.com", "huynhcongthien@gmail.com", "nguyenminhtri@gmail.com", "nguyenminhtri@gmail.com", "nguyenminhtri@gmail.com", "nguyenminhtri@gmail.com", "nguyenminhtri@gmail.com"],
+                           'Number of beds': ["lechithinh@gmail.com", "huynhcongthien@gmail.com", "nguyenminhtri@gmail.com", "nguyenminhtri@gmail.com", "nguyenminhtri@gmail.com", "nguyenminhtri@gmail.com", "nguyenminhtri@gmail.com"],
+                           'Floor': ["lechithinh@gmail.com", "huynhcongthien@gmail.com", "nguyenminhtri@gmail.com", "nguyenminhtri@gmail.com", "nguyenminhtri@gmail.com", "nguyenminhtri@gmail.com", "nguyenminhtri@gmail.com"],
+                           "Status": ["12/5/2003", "15/5/2003", "16/5/2002", "16/5/2002", "16/5/2002", "16/5/2002", "16/5/2002"], 
+                           "Price": ["FrontDesk", "Manager", "Staff", "Staff", "Staff", "Staff", "Staff"]}
+        
+        #show the table
+        key = st.experimental_data_editor(seeding_data, on_change = updatedata) #cal function back
+        
+        #Display the detail data
+        for value in key['Edit']:
+                if value:
+                    index =  key['Edit'].index(value)
+                    with st.expander("", expanded=True):
+                        column1, column2 = st.columns(2)
+                        with column1:
+                            card(
+                                title=key['Room ID'][index],
+                                text=key['Floor'][index],
+                                image="http://placekitten.com/300/250",
+                                url="https://www.google.com",
+                            )
+                        with column2:
+                            st.subheader(f"ROOM ID: :blue[{key['Room ID'][index]}]")
+                            st.caption(f"Room Name: :blue[{key['Room Name'][index]}]")
+                            st.caption(f"Type: :blue[{key['Type'][index]}]")
+                            st.caption(f"Number of beds: :blue[{key['Number of beds'][index]}]")
+                            st.caption(f"Price: :blue[{key['Price'][index]}]")
+            
+
+    with tab2:
+        isNoti = False
+        st.markdown('''
+        <h3 style='text-align: center;  color: black;'>ADD A NEW ROOME</h3>
+        ''', unsafe_allow_html=True)
+        with st.expander('', expanded=True):
+            row_1_1, row_1_2 = st.columns(2)
+            row_2_1, row_2_2 = st.columns(2)
+            row_3_1, row_3_2 = st.columns(2)
+            with row_1_1: 
+                item_name = st.text_input('Staff Name', 'Enter the item name')
+            with row_1_2: 
+                phone = st.text_input('Phone Number', 'Enter phone number')
+            with row_2_1:
+                option = st.selectbox(
+                    'Select the role',
+                    ('Staff', 'Manager', 'FrontDesk'))    
+            with row_2_2:
+                d = st.date_input(
+                        "Date of birth",
+                        datetime.date(2003, 5, 12))
+           
+            with row_3_1:
+                address = st.text_input('Address', 'Enter your address')
+            with row_3_2 :
+                email = st.text_input('Email', 'Enter email')
+                _, _,_,col_4 = st.columns(4)
+                with col_4: 
+                     if button("Add a staff", key="button1"):
+                        isNoti = True
+                        #insert data to datbase
+                            
+        if isNoti:
+            st.success("You have added a new staff")
+        
 elif selected == "Reservation":
     st.write("Reservation")
 elif selected == "Guest":
@@ -71,18 +157,23 @@ elif selected == "Inventory":
 else:
     tab1, tab2 = st.tabs(["**View staff information**", "**Add a staff**"])
     with tab1:
-        df = pd.DataFrame({'Name': ["Le Chi Thinh", "Huynh Cong Thien", "Nguyen Minh Tri"], 
-                           'Phone': ["0822043153", "0822033134", "0822098123"], 
-                           'Email': ["lechithinh@gmail.com", "huynhcongthien@gmail.com", "nguyenminhtri@gmail.com"],
-                           "Date Of Birth": ["12/5/2003", "15/5/2003", "16/5/2002"], 
-                           "Roles": ["FrontDesk", "Manager", "Staff"]})
-        grid_return = AgGrid(df, 
-                             editable=True,
-                             fit_columns_on_grid_load = True, 
-                             enable_quicksearch = True,
-                             reload_data = True)
+        card1, card2, card3 = st.columns(3)
+        card1.metric("Rooms Occupied ", "30", "-10%")
+        card2.metric("Expected Arrivals", "9", "-8%")
+        card3.metric("Expected Departure", "5", "4%")    
+        st.divider()
+        
+        seeding_data = {'Name': ["Le Chi Thinh", "Huynh Cong Thien", "Nguyen Minh Tri", "Nguyen Minh Tri", "Nguyen Minh Tri", "Nguyen Minh Tri", "Nguyen Minh Tri"], 
+                           'Phone': ["0822043153", "0822033134", "0822098123", "0822098123", "0822098123", "0822098123", "0822098123"], 
+                           'Email': ["lechithinh@gmail.com", "huynhcongthien@gmail.com", "nguyenminhtri@gmail.com", "nguyenminhtri@gmail.com", "nguyenminhtri@gmail.com", "nguyenminhtri@gmail.com", "nguyenminhtri@gmail.com"],
+                           "Date Of Birth": ["12/5/2003", "15/5/2003", "16/5/2002", "16/5/2002", "16/5/2002", "16/5/2002", "16/5/2002"], 
+                           "Roles": ["FrontDesk", "Manager", "Staff", "Staff", "Staff", "Staff", "Staff"]}
+        
+        df = pd.DataFrame(seeding_data)
+        st.dataframe(df)
 
     with tab2:
+        isNoti = False
         st.markdown('''
         <h3 style='text-align: center;  color: black;'>Add a staff</h3>
         ''', unsafe_allow_html=True)
@@ -96,7 +187,12 @@ else:
                 phone = st.text_input('Phone Number', 'Enter phone number')
             with col2 :
                 email = st.text_input('Email', 'Enter email')
-                _, _, _, _, _, col6 = st.columns(6)
-                with col6:
-                    st.button("Add") 
+                _, _, col_3 = st.columns(3)
+                with col_3: 
+                     if button("Add a staff", key="button1"):
+                        isNoti = True
+                        #insert data to datbase
+                            
+        if isNoti:
+            st.success("You have added a new staff")
         
