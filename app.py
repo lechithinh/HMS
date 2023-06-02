@@ -46,7 +46,8 @@ if selected == "Dashboard":
             columns=["a", "b", "c"])
         st.bar_chart(chart_data)
 elif selected == "Rooms":
-    tab1, tab2 = st.tabs(["**VIEW ROOM INFORMATION**", "**ADD A ROOM**"])
+    tab1, tab2 = st.tabs(["**VIEW ROOM INFORMATION**",
+                         "**ADD A ROOM**"])
     with tab1:
         col1, col2, col3 = st.columns(3)
         col1.metric(label="Gain", value=5000, delta=1000)
@@ -162,8 +163,8 @@ elif selected == "Rooms":
 elif selected == "Reservation":
     st.write("Reservation")
 elif selected == "Guest":
-    tab1, tab2, tab3, tab4 = st.tabs(
-        ["**VIEW GUEST INFORMATION**", "**ADD A GUEST**", "**UPDATE GUEST**", "**REMOVE GUEST**"])
+    tab1, tab2, tab3 = st.tabs(
+        ["**VIEW GUEST INFORMATION**", "**ADD A GUEST**", "**UPDATE & DELETE GUEST**"])
     with tab1:
         seeding_data = {'Guest Id': ["101", "102", "103", "104", "105", "106", "107"],
                         'Guest name': ["Le Chi Thinh", "Huynh Cong thien", "Nguyen Minh Tri", "Tran Van A", "Tran Van B", "Tran Van C", "Tran Van D"],
@@ -213,13 +214,12 @@ elif selected == "Guest":
             st.success("You have added a new staff")
     with tab3:
         seeding_data = {"Edit": [False, False, False, False, False, False, False],
-                        'Room ID': ["101", "102", "103", "104", "105", "106", "107"],
-                        'Room Name': ["VIP1", "VIP2", "VIP3", "VIP4", "VIP5", "VIP6", "VIP7"],
-                        'Type': ["lechithinh@gmail.com", "huynhcongthien@gmail.com", "nguyenminhtri@gmail.com", "nguyenminhtri@gmail.com", "nguyenminhtri@gmail.com", "nguyenminhtri@gmail.com", "nguyenminhtri@gmail.com"],
-                        'Number of beds': ["lechithinh@gmail.com", "huynhcongthien@gmail.com", "nguyenminhtri@gmail.com", "nguyenminhtri@gmail.com", "nguyenminhtri@gmail.com", "nguyenminhtri@gmail.com", "nguyenminhtri@gmail.com"],
-                        'Floor': ["lechithinh@gmail.com", "huynhcongthien@gmail.com", "nguyenminhtri@gmail.com", "nguyenminhtri@gmail.com", "nguyenminhtri@gmail.com", "nguyenminhtri@gmail.com", "nguyenminhtri@gmail.com"],
-                        "Status": ["12/5/2003", "15/5/2003", "16/5/2002", "16/5/2002", "16/5/2002", "16/5/2002", "16/5/2002"],
-                        "Price": ["FrontDesk", "Manager", "Staff", "Staff", "Staff", "Staff", "Staff"]}
+                        'Guest Id': ["101", "102", "103", "104", "105", "106", "107"],
+                        'Guest name': ["Le Chi Thinh", "Huynh Cong thien", "Nguyen Minh Tri", "Tran Van A", "Tran Van B", "Tran Van C", "Tran Van D"],
+                        'Date of birth': ["22/10/2012", "22/10/2012", "22/10/2012", "22/10/2012", "22/10/2012", "22/10/2012", "22/10/2012"],
+                        'Address': ["Ca Mau", "Long An", "Bien Hoa", "Quang Nam", "Quang Ngai", "Tien Giang", "Phu Yen"],
+                        'Phone number': ['0945678345', '0945678345', '0945678345', '0945678345', '0945678345', '0945678345', '0945678345']
+                        }
 
         # show the table
         def updatedata():
@@ -238,27 +238,41 @@ elif selected == "Guest":
                         column1, column2 = st.columns(2)
                         with column1:
                             card(
-                                title=key['Room ID'][index],
-                                text=key['Floor'][index],
+                                title=key['Guest Id'][index],
+                                text=key['Guest name'][index],
                                 image="http://placekitten.com/300/250",
                                 url="https://www.google.com",
                             )
                         with column2:
                             st.subheader(
-                                f"ROOM ID: :blue[{key['Room ID'][index]}]")
-                            st.caption(
-                                f"Room Name: :blue[{key['Room Name'][index]}]")
-                            st.caption(f"Type: :blue[{key['Type'][index]}]")
-                            st.caption(
-                                f"Number of beds: :blue[{key['Number of beds'][index]}]")
-                            st.caption(f"Price: :blue[{key['Price'][index]}]")
+                                f"GUEST ID: :blue[{key['Guest Id'][index]}]")
+                            row_1_1, row_1_2 = st.columns(2)
+                            row_2_1, row_2_2 = st.columns(2)
+                            row_3_1, row_3_2 = st.columns(2)
+                            with row_1_1:
+                                guest_id = st.text_input(
+                                    "Guest ID", f"{key['Guest Id'][index]}")
+                            with row_1_2:
+                                guest_name = st.text_input(
+                                    "Guest name", f"{key['Guest name'][index]}")
+                            with row_2_1:
+                                date_of_birth = st.date_input(
+                                    "Date of birth", datetime.date(2003, 5, 28))
+                            with row_2_2:
+                                address = st.text_input(
+                                    "Address", f"{key['Address'][index]}")
+                            with row_3_1:
+                                phone = st.text_input(
+                                    "Phone number", f"{key['Phone number'][index]}")
+                            with row_3_2:
+                                edit = st.button("EDIT HERE")
+                                remove = st.button("REMOVE GUEST")
+                                # insert data to datbase
+
                 else:
                     alert = st.error("You must select one room", icon="🚨")
                     time.sleep(3)
                     alert.empty()
-    with tab4:
-        pass
-
 
 elif selected == "Inventory":
     tab1, tab2 = st.tabs(["**View inventory**", "**Add an item**"])
@@ -276,7 +290,7 @@ elif selected == "Inventory":
         <h3 style='text-align: center;  color: black;'>Add a new item</h3>
         ''', unsafe_allow_html=True)
         with st.expander('', expanded=True):
-            item_name = st.text_input('Item name', 'Enter the item name')
+            item_name = st.selectbox("Item name", df['Item'])
             col1, col2 = st.columns(2)
             with col1:
                 total = st.slider('Total', 0, 150, 25)
