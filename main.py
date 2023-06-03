@@ -3,7 +3,7 @@ import streamlit_authenticator as stauth
 from web_module import MyWeb
 import time
 
-names = ['Thinh Le', 'Thien Huynh', "Tony Tri Nguyen"]
+names = ['Thinh Le', 'Thien', "Tony Tri"]
 usernames = ['lechithinh', 'huynhcongthien', 'nguyenminhtri']
 passwords = ['123', '456', '789']
 #configure streamlit width
@@ -16,7 +16,7 @@ for user, name, pw in zip(usernames, names, hashed_passwords):
     credentials["usernames"].update({user:user_dict})
 
 #Authenticate 
-authenticator = stauth.Authenticate(credentials, "HMS", "auth", cookie_expiry_days=30)
+authenticator = stauth.Authenticate(credentials, "HMS", "auth", cookie_expiry_days=0)
 
 #Login Panel
 with st.sidebar: 

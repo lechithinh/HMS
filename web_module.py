@@ -9,6 +9,14 @@ from streamlit_card import card
 from streamlit_extras.metric_cards import style_metric_cards
 import time
 
+#database
+from database import DataBase
+
+#Call only once
+mydb = DataBase("localhost", "root", "root", "hms")
+
+
+
 def MyWeb(authenticator):
     # SideBar
     with st.sidebar:
@@ -322,42 +330,127 @@ def MyWeb(authenticator):
                         st.button("Add")
     elif selected == "Staff":
         tab1, tab2 = st.tabs(["**View staff information**", "**Add a staff**"])
+        #get database from staff table
+        staff_data = mydb.get_staff_table()
         with tab1:
-            card1, card2, card3 = st.columns(3)
-            card1.metric("Rooms Occupied ", "30", "-10%")
-            card2.metric("Expected Arrivals", "9", "-8%")
-            card3.metric("Expected Departure", "5", "4%")
-            st.divider()
 
-            seeding_staff = { "Update": [ False, False, False, False, False, False, False],
-                            'Name': ["Le Chi Thinh", "Huynh Cong Thien", "Nguyen Minh Tri", "Nguyen Minh Tri", "Nguyen Minh Tri", "Nguyen Minh Tri", "Nguyen Minh Tri"],
-                            'Phone': ["0822043153", "0822033134", "0822098123", "0822098123", "0822098123", "0822098123", "0822098123"],
-                            'Email': ["lechithinh@gmail.com", "huynhcongthien@gmail.com", "nguyenminhtri@gmail.com", "nguyenminhtri@gmail.com", "nguyenminhtri@gmail.com", "nguyenminhtri@gmail.com", "nguyenminhtri@gmail.com"],
-                            "Date Of Birth": ["12/5/2003", "15/5/2003", "16/5/2002", "16/5/2002", "16/5/2002", "16/5/2002", "16/5/2002"],
-                            "Roles": ["FrontDesk", "Manager", "Staff", "Staff", "Staff", "Staff", "Staff"]}
+            #handle data for cards
+            role_count = {}
+            for role in staff_data['Role']:
+                if role in role_count:
+                    role_count[role] += 1
+                else:
+                    role_count[role] = 1
+            
+            manager_card, staff_card, desk_card = st.columns(3)
+            manager_card.metric(label="Total Manager", value=role_count['Manager'])
+            staff_card.metric(label="Total Staf", value=role_count['Staff'])
+            desk_card.metric(label="Total FrontDesk", value=role_count['FrontDesk'])
+            style_metric_cards(border_left_color='#F39D9D')
+            
+            #Show the table data
+            table_staff = st.experimental_data_editor(staff_data, use_container_width = True)
+            
+            count = 0
+            for value in table_staff['Update']:
+                if value:
+                    count += 1
+                    if count == 1:
+                        index = table_staff['Update'].index(value)
+                        
+                        #Show an expander for the selected room
+                        with st.expander("", expanded=True):
+                            column_card, column_infor = st.columns(2)
+                            
+                            #card for the selected room
+                            with column_card:
+                                card(
+                                    title=table_staff['Name'][index],
+                                    text=table_staff['Role'][index],
+                                    image="http://placekitten.com/300/250",
+                                    url="https://www.google.com",
+                                )
+                                
+                            #information for the selected room    
+                            with column_infor:
+                                isUpdateSucess = False 
+                                st.subheader(
+                                    f"ROOM ID: :blue[{table_staff['Name'][index]}]")
+                                row_1_1, row_1_2 = st.columns(2)
+                                row_2_1, row_2_2 = st.columns(2)
+                                row_3_1, row_3_2 = st.columns(2)
+                                with row_1_1:
+                                    Name = st.text_input(
+                                        "Full Name", f"{table_staff['Name'][index]}")
+                                with row_1_2:
+                                    Phone = st.text_input(
+                                        'Room type', f"{table_staff['Phone'][index]}")
+                                with row_2_1:
+                                    Email = st.text_input(
+                                        "Floor", f"{table_staff['Email'][index]}")
+                                with row_2_2:
+                                    Role = st.selectbox(
+                                        "Status", ("Manager", "Staff", "FrontDesk"))
+                                with row_3_1:
+                                    Date_of_birth = st.text_input(
+                                        "Number of bed", f"{table_staff['Date Of Birth'][index]}")
+                                with row_3_2:
+                                    staff_id = st.text_input(
+                                        "staff_id", f"{table_staff['staff_id'][index]}")
+                                    
+                                _, _,col3_button = st.columns(3)
+                                
+                                with col3_button:    
+                                    updated_button = st.button("Update Staff infor")
+                                    if updated_button: 
+                                        #Update a staff
+                                        isUpdateSucess = mydb.Update_One_Staff(staff_id, Name,Phone, Email, Date_of_birth, Role)
+                            
+                            if isUpdateSucess:          
+                                st.success("You have updated the information of the room")    
+                                
+                                
+                    else:
+                        alert = st.error("You must select one room", icon="🚨")
+                        time.sleep(3)
+                        alert.empty()
 
-            table_staff = st.experimental_data_editor(seeding_staff)
 
         with tab2:
             isNoti = False
             st.markdown('''
             <h3 style='text-align: center;  color: black;'>Add a staff</h3>
             ''', unsafe_allow_html=True)
-            with st.expander('', expanded=True):
-                item_name = st.text_input('Staff Name', 'Enter the item name')
-                d = st.date_input(
-                    "Date of birth",
-                    datetime.date(2003, 5, 12))
-                col1, col2 = st.columns(2)
-                with col1:
-                    phone = st.text_input('Phone Number', 'Enter phone number')
-                with col2:
-                    email = st.text_input('Email', 'Enter email')
-                    _, _, col_3 = st.columns(3)
-                    with col_3:
-                        if button("Add a staff", key="button1"):
-                            isNoti = True
-                            # insert data to datbase
+            with st.expander("", expanded=True):  
+                isUpdateSucess = False
+                row_1_1, row_1_2 = st.columns(2)
+                row_2_1, row_2_2 = st.columns(2)
+                row_3_1, row_3_2 = st.columns(2)
+                with row_1_1:
+                    Name = st.text_input(
+                        "Full Name", f"")
+                with row_1_2:
+                    Phone = st.text_input(
+                        'Room type', f"")
+                with row_2_1:
+                    Email = st.text_input(
+                        "Floor", f"")
+                with row_2_2:
+                    Role = st.selectbox(
+                        "Status", ("Manager", "Staff", "FrontDesk"))
+                with row_3_1:
+                    Date_of_birth = st.text_input(
+                        "Number of bed", f"")
+                with row_3_2:
+                    staff_id = st.text_input(
+                        "staff_id", f"")
+                    
+                    _, _, col3_button = st.columns(3)
+                    
+                    with col3_button:    
+                        add_button = st.button("Add Staff infor")
+                        if add_button:
+                            isNoti = mydb.Add_New_Staff(Name,Phone,Email,Date_of_birth,Role)
 
             if isNoti:
                 st.success("You have added a new staff")
