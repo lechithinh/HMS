@@ -1,6 +1,6 @@
 import streamlit as st
 import streamlit_authenticator as stauth
-from web_module import MyWeb
+from app import MyWeb
 import time
 
 names = ['Thinh Le', 'Thien', "Tony Tri"]
