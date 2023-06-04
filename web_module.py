@@ -66,91 +66,230 @@ def MyWeb(authenticator):
             col3.metric(label="No Change", value=5000, delta=0)
             style_metric_cards(border_left_color='#F39D9D')
 
-            #Functions to update information to database
-            def UpdateRecord():
-                pass
-
-            seeding_data = {"Edit": [False, False, False, False, False, False, False],
+            seeding_data = {"Updated": [False, False, False, False, False, False, False],
                             'Room ID': ["101", "102", "103", "104", "105", "106", "107"],
                             'Room Name': ["VIP1", "VIP2", "VIP3", "VIP4", "VIP5", "VIP6", "VIP7"],
-                            'Type': ["lechithinh@gmail.com", "huynhcongthien@gmail.com", "nguyenminhtri@gmail.com", "nguyenminhtri@gmail.com", "nguyenminhtri@gmail.com", "nguyenminhtri@gmail.com", "nguyenminhtri@gmail.com"],
-                            'Number of beds': ["lechithinh@gmail.com", "huynhcongthien@gmail.com", "nguyenminhtri@gmail.com", "nguyenminhtri@gmail.com", "nguyenminhtri@gmail.com", "nguyenminhtri@gmail.com", "nguyenminhtri@gmail.com"],
-                            'Floor': ["lechithinh@gmail.com", "huynhcongthien@gmail.com", "nguyenminhtri@gmail.com", "nguyenminhtri@gmail.com", "nguyenminhtri@gmail.com", "nguyenminhtri@gmail.com", "nguyenminhtri@gmail.com"],
-                            "Status": ["12/5/2003", "15/5/2003", "16/5/2002", "16/5/2002", "16/5/2002", "16/5/2002", "16/5/2002"],
-                            "Price": ["FrontDesk", "Manager", "Staff", "Staff", "Staff", "Staff", "Staff"]}
+                            'Type': ["Couple", "King", "King", "King", "Couple", "Couple", "Couple"],
+                            'Number of beds': ["1", "2", "2","2","1","1","1"],
+                            'Floor': ["1", "2", "2","2","1","1","1"],
+                            "Status": ["Available", "Occupied", "Reserved", "Occupied", "Available", "Available", "Available"],
+                            "Price": ["1.000.000", "2.000.000", "2.000.000","2.000.000","1.000.000","1.000.000","1.000.000"]}
 
             # Show database into table
-            table = st.experimental_data_editor(seeding_data, on_change=UpdateRecord)  
-
-        # Update a room
-            count = 0
-            for value in table['Edit']:
+            table = st.experimental_data_editor(seeding_data, use_container_width=True)
+            # Update a room
+            for value in table['Updated']:
                 if value:
-                    count += 1
-                    if count == 1:
-                        index = table['Edit'].index(value)
-                        
+                        index = table['Updated'].index(value)
                         #Show an expander for the selected room
-                        with st.expander("", expanded=True):
-                            column_card, column_infor = st.columns(2)
-                            
-                            #card for the selected room
-                            with column_card:
-                                card(
-                                    title=table['Room ID'][index],
-                                    text=table['Floor'][index],
-                                    image="http://placekitten.com/300/250",
-                                    url="https://www.google.com",
-                                )
-                                
-                            #information for the selected room    
-                            with column_infor:
-                                isUpdate = False 
-                                st.subheader(
-                                    f"ROOM ID: :blue[{table['Room ID'][index]}]")
-                                row_1_1, row_1_2 = st.columns(2)
-                                row_2_1, row_2_2 = st.columns(2)
-                                row_3_1, row_3_2 = st.columns(2)
-                                with row_1_1:
-                                    room_name = st.text_input(
-                                        "Room name", f"{table['Room Name'][index]}")
-                                with row_1_2:
-                                    type_room = st.text_input(
-                                        'Room type', f"{table['Type'][index]}")
-                                with row_2_1:
-                                    floor = st.text_input(
-                                        "Floor", f"{table['Floor'][index]}")
-                                with row_2_2:
-                                    status = st.selectbox(
-                                        "Status", ("Vacant", "Occupied"))
-                                with row_3_1:
-                                    num_bed = st.text_input(
-                                        "Number of bed", f"{table['Number of beds'][index]}")
-                                with row_3_2:
-                                    price = st.text_input(
-                                        "Price", f"{table['Price'][index]}")
-                                    
-                                _, _,col3_button = st.columns(3)
-                                
-                                with col3_button:    
-                                    if button("Update the room", key="updateRoom"):
-                                        isUpdate = True
-                            
-                            if isUpdate:          
-                                st.success("You have updated the information of the room")    
-                                
-                                
-                    else:
-                        alert = st.error("You must select one room", icon="🚨")
-                        time.sleep(3)
-                        alert.empty()
+                        if table["Status"][index] == "Available":
+                            Reservation_column, Room_Infor_Column = st.columns(2)
+                            with Reservation_column:
+                                with st.form("Room Reservation"):    
+                                    st.subheader(
+                                    f"Information: :blue[Reservation]")                                
+                                    with st.container():
+                                        reservation_1_1, reservation_1_2 = st.columns(2)
+                                        reservation_2_1, reservation_2_2 = st.columns(2)
+                                        reservation_3_1, reservation_3_2 = st.columns(2)
+                                        with reservation_1_1:
+                                            first_guest_name = st.text_input(
+                                                "Full Name", f"Enter the name of the first guest")
+                                        with reservation_1_2:
+                                            first_guest_phone = st.text_input(
+                                                "Phone Number", f"Enter phone number")
+                                        with reservation_2_1:
+                                            first_guest_address = st.text_input(
+                                                "Address", f"Enter address")
+                                        with reservation_2_2:
+                                            first_guest_email = st.text_input(
+                                                "Email", f"Enter email")
+                                        with reservation_3_1:
+                                            second_guest_name = st.text_input(
+                                                "Full Name", f"Enter the name of the second guest")
+                                        with reservation_3_2:
+                                            second_guest_phone = st.text_input(
+                                                "Phone", f"Enter phone number")
+                                        reservation_button = st.form_submit_button("Make a reservation", type = "primary")
+                                        
 
+                            with Room_Infor_Column:
+                                isUpdate = False 
+                                with st.form("Room inforamtion"):                                 
+                                    with st.container():
+                                        st.subheader(
+                                            f"ROOM ID: :blue[{table['Room ID'][index]}]")
+                                        row_1_1, row_1_2 = st.columns(2)
+                                        row_2_1, row_2_2 = st.columns(2)
+                                        row_3_1, row_3_2 = st.columns(2)
+                                        with row_1_1:
+                                            room_name = st.text_input(
+                                                "Room name", f"{table['Room Name'][index]}")
+                                        with row_1_2:
+                                            type_room = st.text_input(
+                                                'Room type', f"{table['Type'][index]}")
+                                        with row_2_1:
+                                            floor = st.text_input(
+                                                "Floor", f"{table['Floor'][index]}")
+                                        with row_2_2:
+                                            status = st.selectbox(
+                                                "Status", ("Vacant", "Occupied"))
+                                        with row_3_1:
+                                            num_bed = st.text_input(
+                                                "Number of bed", f"{table['Number of beds'][index]}")
+                                        with row_3_2:
+                                            price = st.text_input(
+                                                "Price", f"{table['Price'][index]}")
+                                            
+                                        _, _,col3_button = st.columns(3)
+                                        
+                                        with col3_button:   
+                                            Update_Room_Button = st.form_submit_button("Update the room", type = "primary") 
+                                            if Update_Room_Button:
+                                                isUpdate = True
+                                    
+                                        if isUpdate:          
+                                            st.success("You have updated the information of the room")    
+                        if table["Status"][index] == "Occupied":   
+                                guest_column, Room_Infor_Column = st.columns(2)
+                                with guest_column:
+                                    with st.form("Checkout"):    
+                                        st.subheader(
+                                        f"Information: :blue[Checkout]")                                
+                                        with st.container():
+                                            reservation_1_1, reservation_1_2 = st.columns(2)
+                                            reservation_2_1, reservation_2_2 = st.columns(2)
+                                            reservation_3_1, reservation_3_2 = st.columns(2)
+                                            with reservation_1_1:
+                                                first_guest_name = st.text_input(
+                                                    "Full Name", f"Le Chi Guest")
+                                            with reservation_1_2:
+                                                first_guest_phone = st.text_input(
+                                                    "Phone Number", f"12345678")
+                                            with reservation_2_1:
+                                                first_guest_address = st.text_input(
+                                                    "Address", f"Ca Mau")
+                                            with reservation_2_2:
+                                                first_guest_email = st.text_input(
+                                                    "Email", f"iamguest@gmail.com")
+                                            with reservation_3_1:
+                                                second_guest_name = st.text_input(
+                                                    "Full Name", f"Le Chi Second")
+                                            with reservation_3_2:
+                                                second_guest_phone = st.text_input(
+                                                    "Phone", f"112233444")
+                                            checkout_button = st.form_submit_button("checkout", type = "primary")
+                                            if checkout_button:
+                                                pass
+                                                #checkout process
+                                            
+                                
+                                with Room_Infor_Column:
+                                    isUpdate = False 
+                                    with st.form("Room inforamtion"):                                 
+                                        with st.container():
+                                            st.subheader(
+                                                f"ROOM ID: :blue[{table['Room ID'][index]}]")
+                                            row_1_1, row_1_2 = st.columns(2)
+                                            row_2_1, row_2_2 = st.columns(2)
+                                            row_3_1, row_3_2 = st.columns(2)
+                                            with row_1_1:
+                                                room_name = st.text_input(
+                                                    "Room name", f"{table['Room Name'][index]}")
+                                            with row_1_2:
+                                                type_room = st.text_input(
+                                                    'Room type', f"{table['Type'][index]}")
+                                            with row_2_1:
+                                                floor = st.text_input(
+                                                    "Floor", f"{table['Floor'][index]}")
+                                            with row_2_2:
+                                                status = st.selectbox(
+                                                    "Status", ("Vacant", "Occupied"))
+                                            with row_3_1:
+                                                num_bed = st.text_input(
+                                                    "Number of bed", f"{table['Number of beds'][index]}")
+                                            with row_3_2:
+                                                price = st.text_input(
+                                                    "Price", f"{table['Price'][index]}")
+                                                
+                                            _, _,col3_button = st.columns(3)
+                                            
+                                            with col3_button:   
+                                                Update_Room_Button = st.form_submit_button("Update the room", type = "primary") 
+                                                if Update_Room_Button:
+                                                    isUpdate = True
+                                        
+                                            if isUpdate:          
+                                                st.success("You have updated the information of the room") 
+                        if table["Status"][index] == "Reserved":   
+                                    guest_column, Room_Infor_Column = st.columns(2)
+                                    with guest_column:
+                                        with st.form("Checkin"):    
+                                            st.subheader(
+                                            f"Information: :blue[Checkin]")                                
+                                            with st.container():
+                                                reservation_1_1, reservation_1_2 = st.columns(2)
+                                                reservation_2_1, reservation_2_2 = st.columns(2)
+                                                reservation_3_1, reservation_3_2 = st.columns(2)
+                                                with reservation_1_1:
+                                                    first_guest_name = st.text_input(
+                                                        "Full Name", f"Le Chi Guest")
+                                                with reservation_1_2:
+                                                    first_guest_phone = st.text_input(
+                                                        "Phone Number", f"12345678")
+                                                with reservation_2_1:
+                                                    first_guest_address = st.text_input(
+                                                        "Address", f"Ca Mau")
+                                                with reservation_2_2:
+                                                    first_guest_email = st.text_input(
+                                                        "Email", f"iamguest@gmail.com")
+                                                with reservation_3_1:
+                                                    second_guest_name = st.text_input(
+                                                        "Full Name", f"Le Chi Second")
+                                                with reservation_3_2:
+                                                    second_guest_phone = st.text_input(
+                                                        "Phone", f"112233444")
+                                                Checkin_button = st.form_submit_button("Checkin", type = "primary")
+                                                
+                                    
+                                    with Room_Infor_Column:
+                                        isUpdate = False 
+                                        with st.form("Room inforamtion"):                                 
+                                            with st.container():
+                                                st.subheader(
+                                                    f"ROOM ID: :blue[{table['Room ID'][index]}]")
+                                                row_1_1, row_1_2 = st.columns(2)
+                                                row_2_1, row_2_2 = st.columns(2)
+                                                row_3_1, row_3_2 = st.columns(2)
+                                                with row_1_1:
+                                                    room_name = st.text_input(
+                                                        "Room name", f"{table['Room Name'][index]}")
+                                                with row_1_2:
+                                                    type_room = st.text_input(
+                                                        'Room type', f"{table['Type'][index]}")
+                                                with row_2_1:
+                                                    floor = st.text_input(
+                                                        "Floor", f"{table['Floor'][index]}")
+                                                with row_2_2:
+                                                    status = st.selectbox(
+                                                        "Status", ("Vacant", "Occupied"))
+                                                with row_3_1:
+                                                    num_bed = st.text_input(
+                                                        "Number of bed", f"{table['Number of beds'][index]}")
+                                                with row_3_2:
+                                                    price = st.text_input(
+                                                        "Price", f"{table['Price'][index]}")
+                                                    
+                                                _, _,col3_button = st.columns(3)
+                                                
+                                                with col3_button:   
+                                                    Update_Room_Button = st.form_submit_button("Update the room", type = "primary") 
+                                                    if Update_Room_Button:
+                                                        isUpdate = True
+                                            
+                                                if isUpdate:          
+                                                    st.success("You have updated the information of the room") 
         with add_room_tab:
-            
-            #Insert a new room to database
-            def AddRoom():
-                pass
-            
             isNoti = False
             st.markdown('''
             <h3 style='text-align: center;  color: black;'>ADD A NEW ROOME</h3>
@@ -329,10 +468,10 @@ def MyWeb(authenticator):
                     with col6:
                         st.button("Add")
     elif selected == "Staff":
-        tab1, tab2 = st.tabs(["**View staff information**", "**Add a staff**"])
+        View_staff_infor, Add_a_staff = st.tabs(["**View staff information**", "**Add a staff**"])
         #get database from staff table
         staff_data = mydb.get_staff_table()
-        with tab1:
+        with View_staff_infor:
 
             #handle data for cards
             role_count = {}
@@ -351,106 +490,111 @@ def MyWeb(authenticator):
             #Show the table data
             table_staff = st.experimental_data_editor(staff_data, use_container_width = True)
             
-            count = 0
+            #If there are two selected rows, please show the second selected one.
             for value in table_staff['Update']:
-                if value:
-                    count += 1
-                    if count == 1:
+                if value :
                         index = table_staff['Update'].index(value)
-                        
+                        staff_id = table_staff['staff_id'][index]
                         #Show an expander for the selected room
                         with st.expander("", expanded=True):
                             column_card, column_infor = st.columns(2)
-                            
-                            #card for the selected room
+                             #card for the selected room
                             with column_card:
                                 card(
                                     title=table_staff['Name'][index],
                                     text=table_staff['Role'][index],
                                     image="http://placekitten.com/300/250",
                                     url="https://www.google.com",
-                                )
+                                    key= staff_id
+                                )   
                                 
                             #information for the selected room    
                             with column_infor:
-                                isUpdateSucess = False 
+                             
+                              
                                 st.subheader(
-                                    f"ROOM ID: :blue[{table_staff['Name'][index]}]")
-                                row_1_1, row_1_2 = st.columns(2)
-                                row_2_1, row_2_2 = st.columns(2)
-                                row_3_1, row_3_2 = st.columns(2)
-                                with row_1_1:
-                                    Name = st.text_input(
-                                        "Full Name", f"{table_staff['Name'][index]}")
-                                with row_1_2:
-                                    Phone = st.text_input(
-                                        'Room type', f"{table_staff['Phone'][index]}")
-                                with row_2_1:
-                                    Email = st.text_input(
-                                        "Floor", f"{table_staff['Email'][index]}")
-                                with row_2_2:
-                                    Role = st.selectbox(
-                                        "Status", ("Manager", "Staff", "FrontDesk"))
-                                with row_3_1:
-                                    Date_of_birth = st.text_input(
-                                        "Number of bed", f"{table_staff['Date Of Birth'][index]}")
-                                with row_3_2:
-                                    staff_id = st.text_input(
-                                        "staff_id", f"{table_staff['staff_id'][index]}")
+                                        f"ROOM ID: :blue[{table_staff['Name'][index]}]")
+                             
+                                with st.form("Update Staff Information"):
+                                    isUpdateSucess = False 
                                     
-                                _, _,col3_button = st.columns(3)
-                                
-                                with col3_button:    
-                                    updated_button = st.button("Update Staff infor")
-                                    if updated_button: 
-                                        #Update a staff
-                                        isUpdateSucess = mydb.Update_One_Staff(staff_id, Name,Phone, Email, Date_of_birth, Role)
+                                    with st.container():
+                                        row_1_1, row_1_2 = st.columns(2)
+                                        row_2_1, row_2_2 = st.columns(2)
+                                        row_3_1, row_3_2 = st.columns(2)
+                                        with row_1_1:
+                                            Name = st.text_input(
+                                                "Full Name", f"{table_staff['Name'][index]}")
+                                        with row_1_2:
+                                            Phone = st.text_input(
+                                                'Phone Number', f"{table_staff['Phone'][index]}")
+                                        with row_2_1:
+                                            Email = st.text_input(
+                                                "Email", f"{table_staff['Email'][index]}")
+                                        with row_2_2:
+                                            Role = st.selectbox(
+                                                "Role", ("Manager", "Staff", "FrontDesk"))
+                                        with row_3_1:
+                                            Date_of_birth = st.text_input(
+                                                "Date Of Birth", f"{table_staff['Date Of Birth'][index]}")
+                                        with row_3_2:
+                                            staff_id = st.text_input(
+                                                "staff_id", f"{table_staff['staff_id'][index]}")
+
+                                        col1_remove_staff,_,col3_update_staff = st.columns(3)
+                                        with col1_remove_staff:
+                                            remove_button = st.form_submit_button("Remove")
+                                            #Remove the user
+                                        with col3_update_staff:
+                                            updated_button = st.form_submit_button("Update Staff Info", type = "primary")
+                                            if updated_button:
+                                                isUpdateSucess = mydb.Update_One_Staff(
+                                                    staff_id, Name, Phone, Email, Date_of_birth, Role
+                                                )
+                                                #After updated --> should refresh the whole page
                             
-                            if isUpdateSucess:          
-                                st.success("You have updated the information of the room")    
-                                
-                                
-                    else:
-                        alert = st.error("You must select one room", icon="🚨")
-                        time.sleep(3)
-                        alert.empty()
+                                    if isUpdateSucess:          
+                                            st.success("Staff information has been updated") 
+                                            
 
-
-        with tab2:
+        with Add_a_staff:
             isNoti = False
             st.markdown('''
             <h3 style='text-align: center;  color: black;'>Add a staff</h3>
             ''', unsafe_allow_html=True)
-            with st.expander("", expanded=True):  
-                isUpdateSucess = False
-                row_1_1, row_1_2 = st.columns(2)
-                row_2_1, row_2_2 = st.columns(2)
-                row_3_1, row_3_2 = st.columns(2)
-                with row_1_1:
-                    Name = st.text_input(
-                        "Full Name", f"")
-                with row_1_2:
-                    Phone = st.text_input(
-                        'Room type', f"")
-                with row_2_1:
-                    Email = st.text_input(
-                        "Floor", f"")
-                with row_2_2:
-                    Role = st.selectbox(
-                        "Status", ("Manager", "Staff", "FrontDesk"))
-                with row_3_1:
-                    Date_of_birth = st.text_input(
-                        "Number of bed", f"")
-                with row_3_2:
-                    staff_id = st.text_input(
-                        "staff_id", f"")
-                    
-                    _, _, col3_button = st.columns(3)
-                    
-                    with col3_button:    
-                        add_button = st.button("Add Staff infor")
-                        if add_button:
-                            isNoti = mydb.Add_New_Staff(Name,Phone,Email,Date_of_birth,Role)
+        
+            with st.form("Add Staff Information", clear_on_submit = True):           
+                with st.container(): 
+                    isUpdateSucess = False
+                    row_1_1, row_1_2 = st.columns(2)
+                    row_2_1, row_2_2 = st.columns(2)
+                    row_3_1, row_3_2 = st.columns(2)
+                    with row_1_1:
+                        Name = st.text_input(
+                            "Full Name", f"Enter staff name")
+                    with row_1_2:
+                        Phone = st.text_input(
+                            'Phone', f"Enter phone number")
+                    with row_2_1:
+                        Email = st.text_input(
+                            "Email", f"Enter Email")
+                    with row_2_2:
+                        Role = st.selectbox(
+                            "Role", ("Manager", "Staff", "FrontDesk"))
+                    with row_3_1:
+                        Date_of_birth = st.date_input(
+                            "Enter date of birth",
+                            datetime.date(2003, 7, 6))
+                    with row_3_2:
+                        Address = st.text_input(
+                            "Address", f"Enter address")
+                        
+                        _, _, col3_button = st.columns(3)
+                        
+                        with col3_button:    
+                            add_button = st.form_submit_button("Create the staff info", type = "primary")
+                            if add_button:
+                                isNoti = mydb.Add_New_Staff(Name,Phone,Email,Date_of_birth,Role)
 
             if isNoti:
                 st.success("You have added a new staff")
