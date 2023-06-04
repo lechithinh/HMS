@@ -20,9 +20,9 @@ mydb = DataBase("localhost", "root", "root", "hms")
 def MyWeb(authenticator):
     # SideBar
     with st.sidebar:
-        selected = option_menu(f"Welcome {st.session_state['name']}", ["Dashboard", 'Rooms', 'Reservation', 'Guest', 'Inventory', 'Staff', 'Edit Profile'],
+        selected = option_menu(f"Welcome {st.session_state['name']}", ["Dashboard", 'Rooms', 'Reservation', 'Inventory', 'Staff', 'Edit Profile'],
                             icons=['kanban-fill', 'grid-1x2-fill', 'calendar-check-fill',
-                                    'people-fill', 'house-fill', 'person-lines-fill', 'person-fill'],
+                                     'house-fill', 'person-lines-fill', 'person-fill'],
                             menu_icon="cast",
                             default_index=0,
                             styles={
@@ -328,26 +328,21 @@ def MyWeb(authenticator):
                 
     #RESERVATION SECTION
     elif selected == "Reservation":
-        st.write("Reservation")
-        
-    #GUEST SECTION
-    elif selected == "Guest":
-        Guest_Infor_Tab, Add_Guest_Tab= st.tabs(
-            ["**VIEW GUEST INFORMATION**", "**ADD A GUEST**"])
-        with Guest_Infor_Tab:
+        Reservation_infor_tab, Add_a_reservation= st.tabs(
+            ["**VIEW RESERVATION**", "**ADD RESERVATION**"])
+        with Reservation_infor_tab:
             seeding_data = {"Edit": [False, False, False, False, False, False, False],
-                            'Guest Id': ["101", "102", "103", "104", "105", "106", "107"],
+                            'Room Id': ["101", "102", "103", "104", "105", "106", "107"],
                             'Guest name': ["Le Chi Thinh", "Huynh Cong thien", "Nguyen Minh Tri", "Tran Van A", "Tran Van B", "Tran Van C", "Tran Van D"],
                             'Date of birth': ["22/10/2012", "22/10/2012", "22/10/2012", "22/10/2012", "22/10/2012", "22/10/2012", "22/10/2012"],
                             'Address': ["Ca Mau", "Long An", "Bien Hoa", "Quang Nam", "Quang Ngai", "Tien Giang", "Phu Yen"],
-                            'Phone number': ['0945678345', '0945678345', '0945678345', '0945678345', '0945678345', '0945678345', '0945678345']
+                            'Phone number': ['0945678345', '0945678345', '0945678345', '0945678345', '0945678345', '0945678345', '0945678345'],
+                            'Number of people': ["2", "2", "3", "4", "5", "3", "2"],
                             }
 
-            # show the table
-            def UpdateRecord():
-                pass
+
             table_guest = st.experimental_data_editor(
-                seeding_data, on_change=UpdateRecord)  
+                seeding_data, use_container_width=True )  
 
             # Display the detail data
             count = 0
@@ -408,7 +403,7 @@ def MyWeb(authenticator):
                         time.sleep(3)
                         alert.empty()
 
-        with Add_Guest_Tab:
+        with Add_a_reservation:
             isNoti = False
             st.markdown('''
             <h3 style='text-align: center;  color: black;'>ADD A NEW ROOME</h3>
@@ -442,7 +437,7 @@ def MyWeb(authenticator):
                 add_message = st.success("You have added a new staff")
                 time.sleep(2)
                 add_message.empty()
-            
+
     #INVENTORY SECTION
     elif selected == "Inventory":
         tab1, tab2 = st.tabs(["**View inventory**", "**Add an item**"])
@@ -451,7 +446,7 @@ def MyWeb(authenticator):
                                 'Item': ["Clothings", "Foods", "Bottle of water", "Pillows", "Shoes", "Towels"], 'Total': [
                             60, 30, 20, 60, 30, 20], 'Remaining': [30, 15, 10, 30, 15, 10]}
             
-            table_inventory = st.experimental_data_editor(seeding_inventory)
+            table_inventory = st.experimental_data_editor(seeding_inventory ,use_container_width= True)
 
         with tab2:
             st.markdown('''
