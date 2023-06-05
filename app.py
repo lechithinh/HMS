@@ -1,13 +1,6 @@
 import streamlit as st
 from streamlit_option_menu import option_menu
-import pandas as pd
-import numpy as np
-from st_aggrid import AgGrid
-import datetime
-from streamlit_extras.stateful_button import button
-from streamlit_card import card
-from streamlit_extras.metric_cards import style_metric_cards
-import time
+
 
 from dashboard import Dashboard
 from rooms import Rooms
@@ -35,11 +28,11 @@ def MyWeb(authenticator):
         })
 
     if selected == "Dashboard":
-        Dashboard()
+        Dashboard(mydb)
     elif selected == "Rooms":
-        Rooms()
+        Rooms(mydb)
     elif selected == "Inventory":
-        Inventory()
+        Inventory(mydb)
     elif selected == "Staff":
         Staff(mydb)
     else:

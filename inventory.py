@@ -1,7 +1,7 @@
 import streamlit as st
 
 
-def Inventory():
+def Inventory(mydb):
     tab1, tab2 = st.tabs(["**View inventory**", "**Add an item**"])
     with tab1:
         seeding_inventory = {'Update': [False, False,  False],

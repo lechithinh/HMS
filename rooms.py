@@ -3,7 +3,7 @@ from streamlit_extras.metric_cards import style_metric_cards
 import time
 
 
-def Rooms():
+def Rooms(mydb):
     room_information_tab, add_room_tab = st.tabs(["**VIEW ROOM INFORMATION**",
                             "**ADD A ROOM**"])
     with room_information_tab:   
@@ -79,9 +79,23 @@ def Rooms():
                                         with reservation_4_2:
                                             second_guest_dob = st.text_input(
                                                 "Date of Birth", f"Enter Date of Birth", key="second guest dob")
-                                        
+                                    water_bottle = st.slider('Number of water bottles', 0, 10, 0)
+                                    coca_bottle = st.slider('Number of CoCa bottles', 0, 10, 0)
+                                    pessi_bottle = st.slider('Number of Pessi bottles', 0, 10, 0)
                                 checkin_button = st.form_submit_button("Checkin", type = "primary")
+                                if checkin_button:
+                                    pass 
+                                    #update to guest infor to data
+                                    #mydb.add_a_guest(first_guest_name,first_guest_phone,first_guest_address,first_guest_dob)
+                                    #mydb.add_a_guest(second_guest)
+                                    #mydb.check_in_room(table['Room ID'][index]) => change status to occupied
+                                    #mydb.add_a_book(table['Room ID'][index], checkin_date, checkout_date,isClose = False)
+                                    #mydb.add_book_guest(table['Room ID'][index], guest_id)
                                     
+                                    #update orders
+                                    #mydb.insert_order(booking_id, product = water, soluong)
+                                    #mydb.insert_order(booking_id, product = coca, soluong)
+                                    #mydb.insert_order(booking_id, product = water, soluong)
 
                         with Room_Infor_Column:
                             isUpdate = False 
@@ -117,13 +131,22 @@ def Rooms():
                                         Update_Room_Button = st.form_submit_button("Update the room", type = "primary") 
                                         if Update_Room_Button:
                                             isUpdate = True
+                                            #update room
                                 
                                     if isUpdate:          
-                                        st.success("You have updated the information of the room")    
+                                        update_success_msg = st.success("You have updated the information of the room") 
+                                        time.sleep(1)
+                                        update_success_msg.empty()
+                                           
                     if table["Status"][index] == "Occupied":   
+
+                            #Lấy dữ liệu của guest view lên và dữ liệu của order và của inventory (số lượng còn lại)
+                            
+                            #room and booking and book_guest => guest id and guest ==> guest infor (ok)
                             guest_column, Room_Infor_Column = st.columns(2)
                             with guest_column:
-                                with st.form("Checkout"):    
+                                with st.form("Checkout"): 
+                                    
                                     st.subheader(
                                     f"INFORMATION: :blue[CHECKOUT]")                                
                                     with st.container():
@@ -133,7 +156,7 @@ def Rooms():
                                         reservation_4_1, reservation_4_2 = st.columns(2)
                                         with reservation_1_1:
                                             first_guest_name = st.text_input(
-                                                "Full Name", f"")
+                                                "Full Name", f"") #guest_data['name']
                                         with reservation_1_2:
                                             first_guest_phone = st.text_input(
                                                 "Phone Number", f"")
@@ -156,23 +179,40 @@ def Rooms():
                                             with reservation_4_2:
                                                 second_guest_dob = st.text_input(
                                                     "Date of Birth", f"", key="second guest dob")
-                                        #Orders
-                                        water_bottle = st.slider('Number of water bottles', 0, 10, 1)
-                                        coca_bottle = st.slider('Number of CoCa bottles', 0, 10, 1)
-                                        pessi_bottle = st.slider('Number of Pessi bottles', 0, 10, 1)
+                                        #Update orders
+                                        water_bottle = st.slider('Number of water bottles', 0, 10, 0) #soluonghientai, soluongconlai_inventory,
+                                        coca_bottle = st.slider('Number of CoCa bottles', 0, 10, 0)
+                                        pessi_bottle = st.slider('Number of Pessi bottles', 0, 10, 0)
+                                        
+                                      
                                         
                                         #Checkout and update button
                                         checkout_col,_ ,_, update_col = st.columns(4)
                                         with checkout_col:
-                                            checkout_button = st.form_submit_button("checkout", type = "primary")
+                                            checkout_button = st.form_submit_button("Checkout", type = "primary")
                                         with update_col:
                                             updated_infor_button = st.form_submit_button("Update infor", type = "primary")
                                         if checkout_button:
-                                            pass
-                                            #checkout process
+                                            
+                                            #update trạng thái room sang available
+                                            #update booking isClose = True
+                                            #get date, room price, order (item + soluong + giá), total price. 
+                                            
+                                            with st.expander("Total summary", expanded= True):
+                                                st.write("Checkin data and checkout data")
+                                                st.write("Room Price: ---------- 200")
+                                                st.write("Service Price: ---------- 40")
+                                                st.write("Total Price: ---------- 240")
+                                            
                                         if updated_infor_button:
                                             pass
-                                        
+                                            #update guest infor
+                                            #trường hợp 1 người / trường hợp 2 người 
+                                            #1 bed 1 người / 2 beds 2 người
+                                            #update order
+                                            #từ booking_id => update order
+                                            #từ item_id => update inventory
+
                             
                             with Room_Infor_Column:
                                 isUpdate = False 
@@ -208,6 +248,7 @@ def Rooms():
                                             Update_Room_Button = st.form_submit_button("Update the room", type = "primary") 
                                             if Update_Room_Button:
                                                 isUpdate = True
+                                                #update room
                                     
                                         if isUpdate:          
                                             st.success("You have updated the information of the room") 
@@ -243,6 +284,7 @@ def Rooms():
                         Add_room_button = st.form_submit_button("Add a room", type = "primary")
                         if Add_room_button:
                             isNoti = True
+                            #insert a room
                         
 
         if isNoti:

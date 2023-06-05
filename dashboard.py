@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 
-def Dashboard():
+def Dashboard(mydb):
     card_1, card_2, card_3 = st.columns(3)
     card_1.metric("Rooms Occupied ", "30", "-10%")
     card_2.metric("Expected Arrivals", "9", "-8%")
