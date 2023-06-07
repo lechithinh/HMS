@@ -11,11 +11,11 @@ from staff import Staff
 from database import DataBase
 
 #Call only once
-mydb = DataBase("127.0.0.1", "root", "uynnibeo2104", "HMS")
+# mydb = DataBase("localhost", "root", "huynhcongthien", "HMS")
 
 
 
-def MyWeb(authenticator):
+def MyWeb(authenticator, mydb, staff_id):
     # SideBar
     with st.sidebar:
         selected = option_menu(f"Welcome {st.session_state['name']}", ["Dashboard", 'Rooms', 'Inventory', 'Staff', 'Edit Profile'],
@@ -30,7 +30,7 @@ def MyWeb(authenticator):
     if selected == "Dashboard":
         Dashboard(mydb)
     elif selected == "Rooms":
-        Rooms(mydb)
+        Rooms(mydb, staff_id)
     elif selected == "Inventory":
         Inventory(mydb)
     elif selected == "Staff":
