@@ -11,7 +11,7 @@ from staff import Staff
 from database import DataBase
 
 #Call only once
-mydb = DataBase("localhost", "root", "root", "hms")
+mydb = DataBase("127.0.0.1", "root", "uynnibeo2104", "HMS")
 
 
 
