@@ -1,11 +1,20 @@
 import streamlit as st
 import streamlit_authenticator as stauth
+from database import DataBase
 from app import MyWeb
 import time
 
-names = ['Thinh Le', 'Thien', "Tony Tri"]
-usernames = ['lechithinh', 'huynhcongthien', 'nguyenminhtri']
-passwords = ['123', '456', '789']
+mydb = DataBase("localhost", "root", "huynhcongthien", "HMS")
+
+staff_login = mydb.get_staff_login()
+names = staff_login['staff_name']
+usernames = staff_login['username']
+passwords = staff_login['password']
+# names = ['Thinh Le', 'Thien', "Tony Tri"]
+# usernames = ['lechithinh', 'huynhcongthien', 'nguyenminhtri']
+# passwords = ['123', '456', '789']
+
+
 #configure streamlit width
 st.set_page_config(layout="wide")
 
@@ -23,11 +32,12 @@ with st.sidebar:
     name, authentication_status, username = authenticator.login('Login', 'main')
 
 
-
 if st.session_state['authentication_status']: #Login successfully
     time.sleep(1)
     #The app
-    MyWeb(authenticator)
+    staff_id = mydb.get_staff_id(username)
+    # print(staff_id)
+    MyWeb(authenticator, mydb, staff_id)
     with st.sidebar:
         st.divider()
         authenticator.logout('Logout', 'sidebar')
