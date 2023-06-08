@@ -20,6 +20,7 @@ class DataBase:
         self.Cursor.execute(query, (username, ))
         data = self.Cursor.fetchone()
         return data[0]
+    
     def get_staff_login(self):
         query = "SELECT staff_name, username, password FROM staff"
         self.Cursor.execute(query)
@@ -35,8 +36,15 @@ class DataBase:
             staff_login['username'].append(item[1])
             staff_login["password"].append(item[2])
         return staff_login
+    
+    def get_a_staff(self, staff_id):
+        query = f"SELECT staff_name, phone_number,address,date_of_birth,username,role FROM staff WHERE staff_id = {staff_id}"
+        self.Cursor.execute(query)
+        data = self.Cursor.fetchone()
+        return data
+    
     def get_staff_table(self):
-        query = "SELECT * FROM staff"
+        query = "SELECT * FROM staff WHERE isActive = 'TRUE'"
         self.Cursor.execute(query)
         data = self.Cursor.fetchall()
     
@@ -46,36 +54,44 @@ class DataBase:
             "Update": [],
             'Name': [],
             'Phone': [],
-            'Email': [],
+            'Address': [],
             "Date Of Birth": [],
-            "Role": []
+            "Role": [],
+            "username": []
             }
 
         for item in data:
                 staff_data["staff_id"].append(item[0])
                 staff_data["Update"].append(False)
-                staff_data["Name"].append(item[2])
-                staff_data["Phone"].append(str(item[3]))
-                staff_data["Email"].append(item[4])
+                staff_data["Name"].append(item[1])
+                staff_data["Phone"].append(str(item[2]))
+                staff_data["Address"].append(item[4])
                 staff_data["Date Of Birth"].append(item[5])
                 staff_data["Role"].append(item[6])
+                staff_data["username"].append(item[3])
         return staff_data
-        
-
     
-    def Update_One_Staff(self, staff_id, Name, Phone, Email, DateOfBirth, Role):
-        query = "UPDATE staff SET Name = %s, Phone = %s, Email = %s, Date_Of_Birth = %s, Role = %s WHERE staff_id = %s"
+    def Update_One_Staff(self, staff_id, Name, Phone, Address, DateOfBirth, Username, Role):
+        query = "UPDATE staff SET staff_name = %s, phone_number = %s, address = %s, date_of_birth = %s, username = %s, role = %s WHERE staff_id = %s"
         try:
-            self.Cursor.execute(query, (Name, Phone, Email, DateOfBirth, Role, staff_id))
+            self.Cursor.execute(query, (Name, Phone, Address, DateOfBirth, Role,Username, staff_id))
             self.mydb.commit()
             return True
         except:
             return False
         
-    def Add_New_Staff(self, Name, Phone, Email, DateOfBirth, Role):
-        query = "INSERT INTO staff (Name, Phone, Email, Date_Of_Birth, Role) VALUES (%s, %s, %s, %s, %s) " 
+    def Add_New_Staff(self, Name, Phone, username, password, DateOfBirth, Role, address):
+        query = "INSERT INTO staff (staff_name,phone_number, username, password,date_of_birth, role, address) VALUES (%s, %s, %s, %s, %s,%s,%s) " 
         try: 
-            self.Cursor.execute(query, (Name, Phone, Email, DateOfBirth, Role))
+            self.Cursor.execute(query, (Name, Phone,username, password, DateOfBirth, Role, address))
+            self.mydb.commit()
+            return True
+        except:
+            return False
+    def Hide_staff(self, staff_id):
+        query = f"UPDATE staff SET isActive = 'FALSE' where staff_id = {staff_id}"
+        try:
+            self.Cursor.execute(query)
             self.mydb.commit()
             return True
         except:
@@ -202,6 +218,16 @@ class DataBase:
             return True
         except:
             return False
+    def add_a_room(self, room_name, floor, room_type, room_price, room_beds, max_people):
+        query = "INSERT INTO room(room_name, floor, room_type, room_price, room_beds, max_people, status) values (%s, %s, %s, %s, %s, %s, %s)"
+        try:
+            room_status = 'Available'
+            self.Cursor.execute(query, (room_name, floor, room_type, room_price, room_beds, max_people, room_status))
+            self.mydb.commit()
+            return True
+        except:
+            return False
+
     #CHECKOUT
     #Lấy thông tin khách
     def get_guest_table(self):
@@ -249,7 +275,7 @@ class DataBase:
     from (
 	    select * 
 	    from booking 
-	    where room_id = %s and isClose = "%s" ) table1
+	    where room_id = %s and isClose = %s ) table1
             inner join booking_guest
             on table1.booking_id = booking_guest.booking_id
             inner join guest
@@ -371,8 +397,52 @@ class DataBase:
         except:
             return False
 
+    #inventory
+    def get_inventory_table(self):
+        query = "SELECT * FROM inventory"
+        self.Cursor.execute(query)
+        data = self.Cursor.fetchall()
+    
+        #convert to dictionary
+        inventory_data = {
+            "item_id": [],
+            "Update":[],
+            "item_name": [],
+            'price': [],
+            'total': [],
+            'remain': [],
+            "created_at": []
+            }
+
+        for item in data:
+                inventory_data["item_id"].append(item[0])
+                inventory_data["Update"].append(False)
+                inventory_data["item_name"].append(item[1])
+                inventory_data["price"].append(item[2])
+                inventory_data["total"].append(str(item[3]))
+                inventory_data["remain"].append(item[4])
+                inventory_data["created_at"].append(item[5])
+        return inventory_data
+    
+    def add_inventory(self,item_name, amount, price):
+        query = "UPDATE inventory SET total = total + %s , remain = remain + %s , price = %s WHERE item_name = %s"
+        try:
+            self.Cursor.execute(query, (amount,amount,price,item_name))
+            self.mydb.commit()
+            return True
+        except:
+            return False
+    
+    #edit profile
+    def get_infor_staff(self, staff_id):
+        query = f"SELECT * FROM staff WHERE staff_id = {staff_id}"
+        self.Cursor.execute(query)
+        data = self.Cursor.fetchone()
+        return data[0]
+
 def main():
     mydb = DataBase("localhost", "root", "huynhcongthien", "HMS")
+    
     
     #data = mydb.Add_New_Staff("Le Chi T1233333", "0822043152", "lechithinh123@gmail.com", "13/04/2003", "Manager")
     #data = mydb.insert_order(1,"water",2)
@@ -381,7 +451,9 @@ def main():
     #mydb.update_inventory("water",8)
     #mydb.get_remain_item()
     # mydb.update_room('Room2',	1,	'NORMAL'	,200,	1,	2,	'Available','TRUE',2)
-    mydb.add_bill(1, 1, 6, 1300)
+    #mydb.add_bill(1, 1, 6, 1300)
+    # mydb.get_a_staff(2)
+    mydb.Update_One_Staff(4,"nmt",21323,"bh","1999-04-04","nmtt","Staff")
     # print(mydb.g)
 if __name__ == "__main__":
     main()
