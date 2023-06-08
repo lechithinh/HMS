@@ -14,12 +14,14 @@ def Staff(mydb):
     with View_staff_infor:
 
             #handle data for cards
-            role_count = {}
+            role_count = {'Manager':0, 'Staff':0,'Owner':0}
             for role in staff_data['Role']:
-                if role in role_count:
+                if role == 'Manager':
+                    role_count[role] += 1
+                elif role == 'Staff':
                     role_count[role] += 1
                 else:
-                    role_count[role] = 1
+                    role_count[role] +=1
             
             manager_card, staff_card, desk_card = st.columns(3)
             manager_card.metric(label="Total Manager", value=role_count['Manager'])
