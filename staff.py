@@ -122,6 +122,7 @@ def Staff(mydb):
                             "Enter date of birth",
                             datetime.date(2003, 7, 6))
                     with row_3_2:
+                        
                         Address = st.text_input(
                             "Address", f"Enter address")
                         
