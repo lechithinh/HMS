@@ -44,7 +44,7 @@ class DataBase:
         return data
     
     def get_staff_table(self):
-        query = "SELECT * FROM staff"
+        query = "SELECT * FROM staff WHERE isActive = 'TRUE'"
         self.Cursor.execute(query)
         data = self.Cursor.fetchall()
     
@@ -54,34 +54,44 @@ class DataBase:
             "Update": [],
             'Name': [],
             'Phone': [],
-            'Email': [],
+            'Address': [],
             "Date Of Birth": [],
-            "Role": []
+            "Role": [],
+            "username": []
             }
 
         for item in data:
                 staff_data["staff_id"].append(item[0])
                 staff_data["Update"].append(False)
-                staff_data["Name"].append(item[2])
-                staff_data["Phone"].append(str(item[3]))
-                staff_data["Email"].append(item[4])
+                staff_data["Name"].append(item[1])
+                staff_data["Phone"].append(str(item[2]))
+                staff_data["Address"].append(item[4])
                 staff_data["Date Of Birth"].append(item[5])
                 staff_data["Role"].append(item[6])
+                staff_data["username"].append(item[3])
         return staff_data
     
     def Update_One_Staff(self, staff_id, Name, Phone, Address, DateOfBirth, Username, Role):
         query = "UPDATE staff SET staff_name = %s, phone_number = %s, address = %s, date_of_birth = %s, username = %s, role = %s WHERE staff_id = %s"
         try:
-            self.Cursor.execute(query, (Name, Phone, Address, DateOfBirth,Username, Role, staff_id))
+            self.Cursor.execute(query, (Name, Phone, Address, DateOfBirth, Role,Username, staff_id))
             self.mydb.commit()
             return True
         except:
             return False
-        
-    def Add_New_Staff(self, Name, Phone, DateOfBirth, Role):
-        query = "INSERT INTO staff (Name, Phone, Email, Date_Of_Birth, Role) VALUES (%s, %s, %s, %s, %s) " 
+
+    def Add_New_Staff(self, Name, Phone, username, password, DateOfBirth, Role, address):
+        query = "INSERT INTO staff (staff_name,phone_number, username, password,date_of_birth, role, address) VALUES (%s, %s, %s, %s, %s,%s,%s) " 
         try: 
-            self.Cursor.execute(query, (Name, Phone, DateOfBirth, Role))
+            self.Cursor.execute(query, (Name, Phone,username, password, DateOfBirth, Role, address))
+            self.mydb.commit()
+            return True
+        except:
+            return False
+    def Hide_staff(self, staff_id):
+        query = f"UPDATE staff SET isActive = 'FALSE' where staff_id = {staff_id}"
+        try:
+            self.Cursor.execute(query)
             self.mydb.commit()
             return True
         except:
@@ -208,6 +218,16 @@ class DataBase:
             return True
         except:
             return False
+    def add_a_room(self, room_name, floor, room_type, room_price, room_beds, max_people):
+        query = "INSERT INTO room(room_name, floor, room_type, room_price, room_beds, max_people, status) values (%s, %s, %s, %s, %s, %s, %s)"
+        try:
+            room_status = 'Available'
+            self.Cursor.execute(query, (room_name, floor, room_type, room_price, room_beds, max_people, room_status))
+            self.mydb.commit()
+            return True
+        except:
+            return False
+
     #CHECKOUT
     #Lấy thông tin khách
     def get_guest_table(self):
@@ -422,6 +442,7 @@ class DataBase:
 
 def main():
     mydb = DataBase("127.0.0.1", "root", "uynnibeo2104", "HMS")
+    
     
     
     #data = mydb.Add_New_Staff("Le Chi T1233333", "0822043152", "lechithinh123@gmail.com", "13/04/2003", "Manager")
