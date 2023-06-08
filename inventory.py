@@ -1,5 +1,5 @@
 import streamlit as st
-
+import time
 
 def Inventory(mydb):
     tab1, tab2 = st.tabs(["**View inventory**", "**Add an item**"])
@@ -14,7 +14,8 @@ def Inventory(mydb):
             <h3 style='text-align: center;  color: black;'>Add a new item</h3>
             ''', unsafe_allow_html=True)
             
-            with st.form("Add a new item"):              
+            with st.form("Add a new item"):
+                isProductadded = False              
                 with st.container():
                     item_name = st.selectbox("Product Name", table_inventory['item_name'])
                     col1, col2 = st.columns(2)
@@ -26,6 +27,10 @@ def Inventory(mydb):
                         with col6:
                             add_item = st.form_submit_button("Add", type = "primary")
                             if add_item:
-                                print(item_name)
-                                mydb.add_inventory(item_name,total,price)
-    
+                                isProductadded = mydb.add_inventory(item_name,total,price)
+                    if isProductadded:
+                        st.success("You have added a new product")
+                        time.sleep(2)
+                        st.experimental_rerun()
+                        
+                    

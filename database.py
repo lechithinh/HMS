@@ -71,10 +71,10 @@ class DataBase:
                 staff_data["Username"].append(item[3])
         return staff_data
     
-    def Update_One_Staff(self, staff_id, Name, Phone, Address, DateOfBirth, Username, Role):
+    def Update_One_Staff(self, Name, Phone, Address, DateOfBirth, Username, Role, staff_id):
         query = "UPDATE staff SET staff_name = %s, phone_number = %s, address = %s, date_of_birth = %s, username = %s, role = %s WHERE staff_id = %s"
         try:
-            self.Cursor.execute(query, (Name, Phone, Address, DateOfBirth, Role,Username, staff_id))
+            self.Cursor.execute(query, (Name, Phone, Address, DateOfBirth, Username, Role,staff_id))
             self.mydb.commit()
             return True
         except:

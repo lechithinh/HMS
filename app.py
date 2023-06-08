@@ -1,17 +1,14 @@
 import streamlit as st
 from streamlit_option_menu import option_menu
 
-
+#Module
 from dashboard import Dashboard
 from rooms import Rooms
 from inventory import Inventory
 from staff import Staff
 from staff_profile import StaffProfile
-#database
-from database import DataBase
 
-#Call only once
-# mydb = DataBase("localhost", "root", "huynhcongthien", "HMS")
+
 
 
 

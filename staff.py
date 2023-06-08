@@ -6,6 +6,8 @@ import datetime
 from PIL import Image
 import os
 import base64
+import streamlit_authenticator as stauth
+
 
 def Staff(mydb):
     View_staff_infor, Add_a_staff = st.tabs(["**View staff information**", "**Add a staff**"])
@@ -36,51 +38,31 @@ def Staff(mydb):
             for value in table_staff['Update']:
                 if value :
                         index = table_staff['Update'].index(value)
-                        staff_id = table_staff['staff_id'][index]
-                        username = table_staff['username'][index]
+                        staff_id = table_staff['Staff ID'][index]
+                        username = table_staff['Username'][index]
                         #Show an expander for the selected room
                         with st.expander("", expanded=True):
                             column_card, column_infor = st.columns(2)
                              #card for the selected room
                             with column_card:
-                                if os.path.exists(f"assets/staff/username_{username}.png"):
+                                with open(f"assets/staff/Unknown_person.jpg", "rb") as f:
+                                    data = f.read()
+                                    encoded = base64.b64encode(data)
+                                data = "data:image/png;base64," + encoded.decode("utf-8")
+                                
+                                card(
+                                    title=table_staff['Name'][index],
+                                    text=table_staff['Role'][index],
+                                    image=data,
+                                    url="https://github.com/gamcoh/st-card")
 
-                                    with open(f"assets/staff/username_{username}.png", "rb") as f:
-                                        data = f.read()
-                                        encoded = base64.b64encode(data)
-                                    data = "data:image/png;base64," + encoded.decode("utf-8")
-                                    
-                                    card(
-                                        title=table_staff['Name'][index],
-                                        text=table_staff['Role'][index],
-                                        image=data,
-                                        url="https://github.com/gamcoh/st-card"
-                                    )
-                                else:
-                                    with open(f"assets/staff/Unknown_person.jpg", "rb") as f:
-                                        data = f.read()
-                                        encoded = base64.b64encode(data)
-                                    data = "data:image/png;base64," + encoded.decode("utf-8")
-                                    
-                                    card(
-                                        title=table_staff['Name'][index],
-                                        text=table_staff['Role'][index],
-                                        image=data,
-                                        url="https://github.com/gamcoh/st-card")
-                                # card(
-                                #     title=table_staff['Name'][index],
-                                #     text=table_staff['Role'][index],
-                                #     image="http://placekitten.com/300/250",
-                                #     # url="https://www.google.com",
-                                #     key= staff_id
-                                # )   
                                 
                             #information for the selected room    
                             with column_infor:
                              
                               
                                 st.subheader(
-                                        f"STAFF ID: :blue[{table_staff['staff_id'][index]}]")
+                                        f"STAFF ID: :blue[{table_staff['Staff ID'][index]}]")
                              
                                 with st.form("Update Staff Information"):
                                     isUpdateSucess = False 
@@ -91,16 +73,16 @@ def Staff(mydb):
                                         row_2_1, row_2_2 = st.columns(2)
                                         row_3_1, row_3_2 = st.columns(2)
                                         with row_1_1:
-                                            Name = st.text_input(
+                                            staff_name = st.text_input(
                                                 "Full Name", f"{table_staff['Name'][index]}")
                                         with row_1_2:
-                                            Phone = st.text_input(
+                                            staff_phone = st.text_input(
                                                 'Phone Number', f"{table_staff['Phone'][index]}")
                                         with row_2_1:
-                                            Email = st.text_input(
+                                            staff_address = st.text_input(
                                                 "Address", f"{table_staff['Address'][index]}")
                                         with row_2_2:
-                                            Role = st.selectbox(
+                                            staff_role = st.selectbox(
                                                 "Role", ("Manager", "Staff", "FrontDesk"))
                                         with row_3_1:
                                             date_obj = table_staff['Date Of Birth'][index]
@@ -111,7 +93,7 @@ def Staff(mydb):
                                             Date_of_birth = st.date_input(
                                                 "Date Of Birth", datetime.date(year, month, day))
                                         with row_3_2:
-                                            Username = st.text_input("Username", f"{table_staff['username'][index]}")
+                                            staff_username = st.text_input("Username", f"{table_staff['Username'][index]}", disabled=True)
 
                                         col1_remove_staff,_,col3_update_staff = st.columns(3)
                                         with col1_remove_staff:
@@ -124,11 +106,9 @@ def Staff(mydb):
                                             updated_button = st.form_submit_button("Update Staff Info", type = "primary")
                                             if updated_button:
                                                 isUpdateSucess = mydb.Update_One_Staff(
-                                                    staff_id, Name, Phone, Email, Date_of_birth, Role,Username
+                                                    staff_name, staff_phone, staff_address, Date_of_birth,staff_username,staff_role, staff_id, 
                                                 )
-                                                #After updated --> should refresh the whole page
-
-                            
+                                            
                                     if isUpdateSucess:          
                                             st.success("Staff information has been updated")      
                                     if isRemove:
@@ -158,6 +138,8 @@ def Staff(mydb):
                             "Username",  placeholder="Enter Username")
                     with row_2_2:
                         password = st.text_input("Password", placeholder="Enter password")
+                        if password:
+                            hashed_password = stauth.Hasher([password]).generate()
                     with row_3_1:
                         Date_of_birth = st.date_input(
                             "Enter date of birth")
@@ -174,33 +156,8 @@ def Staff(mydb):
                             
                             add_button = st.form_submit_button("Create the staff info", type = "primary")
                             if add_button:
-                                isNoti = mydb.Add_New_Staff(Name,Phone,username,password,Date_of_birth,Role, Address)
+                                isNoti = mydb.Add_New_Staff(Name,Phone,username,hashed_password[0],Date_of_birth,Role, Address)
 
-            uploaded_file = st.file_uploader("Choose an image....", type=["jpg", "jpeg", "png"])
-            if uploaded_file is not None:
-                image = Image.open(uploaded_file)
-                st.image(image, caption='Uploaded image', use_column_width=True)
-            
-            download_btn = st.button("Save image")
-            if download_btn:
-                file_name = f"username_{username}.png"
-                image.save(file_name)
-
-                with open(file_name, "rb") as f:
-                    data = f.read()
-                    st.download_button(
-                            label="Save image staff",
-                            data=data,
-                            file_name=file_name,
-                            mime="image/png",
-                                    # Specify download path
-                                 )
-                download_dir = "assets/staff"
-                os.makedirs(download_dir, exist_ok=True)
-                os.rename(file_name, os.path.join(download_dir, file_name))
-            
-                                
-                                
-                                
+                        
             if isNoti:
                 st.success("You have added a new staff")

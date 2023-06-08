@@ -116,7 +116,7 @@ def Rooms(mydb, staff_id):
                                         if (remain_pessi == 0):
                                             st.text("Pessi is not available")
                                         else:
-                                            pessi_bottle = st.slider('Number of CoCa bottles', 0,  remain_pessi, 0)
+                                            pessi_bottle = st.slider('Number of pessi bottles', 0,  remain_pessi, 0)
 
                                     checkin_button = st.form_submit_button("Checkin", type = "primary")
                                     
@@ -129,7 +129,7 @@ def Rooms(mydb, staff_id):
                                         if first_guest_phone.isnumeric() == False or len(first_guest_phone) != 10:
                                             st.error("Check **phone number** of first guest again!")
                                             check_valid_info = False
-                                        if first_guest_name.isalpha() == False or first_guest_address.isalpha() == False:
+                                        if first_guest_name.isalpha() == False:
                                             st.error("Check **name/address** of first guest again!")
                                             check_valid_info = False
                                         
@@ -137,7 +137,7 @@ def Rooms(mydb, staff_id):
                                             if second_guest_phone.isnumeric() == False or len(second_guest_phone) != 10:
                                                 st.error("Check **phone number** of second guest again!")
                                                 check_valid_info = False
-                                            if second_guest_phone.isalpha() == False or second_guest_phone.isalpha() == False:
+                                            if second_guest_name.isalpha() == False:
                                                 st.error("Check **name/address** of second guest again!")
                                                 check_valid_info = False
 
