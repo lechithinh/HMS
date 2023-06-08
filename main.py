@@ -4,7 +4,8 @@ from database import DataBase
 from app import MyWeb
 import time
 
-mydb = DataBase("localhost", "root", "huynhcongthien", "HMS")
+mydb = DataBase("127.0.0.1", "root", "uynnibeo2104", "HMS")
+    
 
 staff_login = mydb.get_staff_login()
 names = staff_login['staff_name']

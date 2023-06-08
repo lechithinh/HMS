@@ -79,7 +79,7 @@ class DataBase:
             return True
         except:
             return False
-        
+
     def Add_New_Staff(self, Name, Phone, username, password, DateOfBirth, Role, address):
         query = "INSERT INTO staff (staff_name,phone_number, username, password,date_of_birth, role, address) VALUES (%s, %s, %s, %s, %s,%s,%s) " 
         try: 
@@ -441,7 +441,8 @@ class DataBase:
         return data[0]
 
 def main():
-    mydb = DataBase("localhost", "root", "huynhcongthien", "HMS")
+    mydb = DataBase("127.0.0.1", "root", "uynnibeo2104", "HMS")
+    
     
     
     #data = mydb.Add_New_Staff("Le Chi T1233333", "0822043152", "lechithinh123@gmail.com", "13/04/2003", "Manager")
