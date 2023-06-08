@@ -50,25 +50,25 @@ class DataBase:
     
         #convert to dictionary
         staff_data = {
-            "staff_id": [],
             "Update": [],
+            "Staff ID": [],
             'Name': [],
             'Phone': [],
             'Address': [],
             "Date Of Birth": [],
             "Role": [],
-            "username": []
+            "Username": []
             }
 
         for item in data:
-                staff_data["staff_id"].append(item[0])
                 staff_data["Update"].append(False)
+                staff_data["Staff ID"].append(item[0])
                 staff_data["Name"].append(item[1])
                 staff_data["Phone"].append(str(item[2]))
                 staff_data["Address"].append(item[4])
                 staff_data["Date Of Birth"].append(item[5])
                 staff_data["Role"].append(item[6])
-                staff_data["username"].append(item[3])
+                staff_data["Username"].append(item[3])
         return staff_data
     
     def Update_One_Staff(self, staff_id, Name, Phone, Address, DateOfBirth, Username, Role):
@@ -88,6 +88,7 @@ class DataBase:
             return True
         except:
             return False
+        
     def Hide_staff(self, staff_id):
         query = f"UPDATE staff SET isActive = 'FALSE' where staff_id = {staff_id}"
         try:
@@ -113,8 +114,8 @@ class DataBase:
             "Room beds": [],
             "Max people": [],
             "Status": [],
-            "is Active":[],
-            "Created at":[]
+            #"is Active":[],
+            #"Created at":[]
             }
 
         for item in data:
@@ -127,8 +128,8 @@ class DataBase:
                 table_data["Room beds"].append(item[5])
                 table_data["Max people"].append(item[6])
                 table_data["Status"].append(item[7])
-                table_data["is Active"].append(item[8])
-                table_data["Created at"].append(item[9])
+                #table_data["is Active"].append(item[8])
+                #table_data["Created at"].append(item[9])
         return table_data
     
     def add_a_guest(self, first_guest_name,first_guest_phone,first_guest_address,first_guest_dob):
@@ -206,18 +207,18 @@ class DataBase:
         data = self.Cursor.fetchone()
         return data[0]
     
-
-    def update_room(self,  room_name, floor, room_type, room_price, room_beds, max_people, status, isActive,room_id):
+    def update_room(self,  room_name, floor, room_type, room_price, room_beds, max_people,room_id):
         query = """UPDATE room
-            SET room_name = %s , floor = %s , room_type = %s , room_price = %s , room_beds  = %s , max_people  = %s , `status` = %s , isActive = %s
+            SET room_name = %s , floor = %s , room_type = %s , room_price = %s , room_beds  = %s , max_people  = %s
             WHERE room_id = %s
         """
         try: 
-            self.Cursor.execute(query, (room_name, floor, room_type, room_price, room_beds, max_people, status, isActive,room_id))
+            self.Cursor.execute(query, (room_name, floor, room_type, room_price, room_beds, max_people,room_id))
             self.mydb.commit()
             return True
         except:
             return False
+        
     def add_a_room(self, room_name, floor, room_type, room_price, room_beds, max_people):
         query = "INSERT INTO room(room_name, floor, room_type, room_price, room_beds, max_people, status) values (%s, %s, %s, %s, %s, %s, %s)"
         try:
