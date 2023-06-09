@@ -1,0 +1,1 @@
+#write funcs that help inventory file
