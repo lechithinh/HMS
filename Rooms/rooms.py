@@ -7,6 +7,9 @@ from datetime import datetime, timedelta
 #Helpers
 from global_helpers import DisplayTextCenter
 
+from Rooms.room_supports import guest_validation, room_validation
+
+
 class Rooms_Module:
     def __init__(self, mydb):
         self.mydb = mydb
@@ -118,23 +121,15 @@ class Rooms_Module:
                         checkout_time = st.time_input("Check-out time",datetime(now.year,now.month,now.day,hour=12 ) )
                         checkout_datetime = datetime.combine(checkout_date, checkout_time)
 
-                    remain_water = self.mydb.get_remain_item("water")
-                    remain_coca =  self.mydb.get_remain_item("coca")
-                    remain_pessi = self.mydb.get_remain_item("pessi")
-                    if (remain_water == 0):
-                        st.text("Water is not available")
-                    else:
-                        water_bottle = st.slider('Number of water bottles', 0,  remain_water, 0)
+                    #get the current inventory table
+                    inventory_table = self.mydb.get_inventory_table_in_room()
+                    #list used to store slider (num slider = num item in inventory list)
+                    slider_list = [""] * len(inventory_table["item name"])
+                    
+                    #create slider
+                    for idx,item_name  in enumerate(inventory_table["item name"]):
+                        slider_list[idx] = st.slider(f"Number of {item_name}",0, inventory_table["remain"][idx])
 
-                    if (remain_coca == 0):
-                        st.text("Coca is not available")
-                    else:
-                        coca_bottle = st.slider('Number of CoCa bottles', 0,  remain_coca, 0)
-
-                    if (remain_pessi == 0):
-                        st.text("Pessi is not available")
-                    else:
-                        pessi_bottle = st.slider('Number of pessi bottles', 0,  remain_pessi, 0)
 
                 checkin_button = st.form_submit_button("Checkin", type = "primary")
                 
@@ -143,21 +138,10 @@ class Rooms_Module:
                         time.sleep(2)
 
                     # kiểm tra thông tin check-in
-                    check_valid_info = True
-                    if len(first_guest_phone) != 10:
-                        st.error("Check **phone number** of first guest again!")
-                        check_valid_info = False
-                    if first_guest_name.isalpha() == False:
-                        st.error("Check **name/address** of first guest again!")
-                        check_valid_info = False
-                    
+                    check_valid_info = guest_validation(first_guest_name,first_guest_phone,first_guest_address,first_guest_dob,"first")
+
                     if table['Room beds'][index] == 2:
-                        if len(second_guest_phone) != 10:
-                            st.error("Check **phone number** of second guest again!")
-                            check_valid_info = False
-                        if second_guest_name.isalpha() == False:
-                            st.error("Check **name/address** of second guest again!")
-                            check_valid_info = False
+                        check_valid_info = guest_validation(second_guest_name,second_guest_phone,second_guest_address,second_guest_dob,"second")
 
                     
                     if check_valid_info == False:
@@ -188,15 +172,16 @@ class Rooms_Module:
                         guest_id = self.mydb.get_guest_id(int(num_pp)) # list of guest id
                         self.mydb.add_a_booking_guest(booking_id, guest_id)
 
-                        #update orders
-                        self.mydb.insert_order(booking_id, 'water',water_bottle)
-                        self.mydb.insert_order(booking_id, 'coca',coca_bottle)
-                        self.mydb.insert_order(booking_id, 'pessi',pessi_bottle)
+                        #item with order amount > 0 will be added
+                        for idx,item_slider in enumerate(slider_list):
+                            if item_slider > 0:
 
-                        #update inventory 
-                        self.mydb.update_inventory('water',water_bottle)
-                        self.mydb.update_inventory('coca',coca_bottle)
-                        self.mydb.update_inventory('pessi',pessi_bottle)
+                                #update orders
+                                self.mydb.insert_order(booking_id,inventory_table['item name'][idx],item_slider)
+
+                                #update inventory 
+                                self.mydb.update_inventory(inventory_table['item name'][idx],item_slider)
+                        
 
                         #show sucessfully login message and rerun
                         with st.spinner('Processing...'):
@@ -214,19 +199,22 @@ class Rooms_Module:
 
 
     def view_occupied_room(self, table,index, staff_id):
-         #Lấy dữ liệu của guest view lên và dữ liệu của order và của inventory (số lượng còn lại)
+        #Lấy dữ liệu của guest view lên và dữ liệu của order và của inventory (số lượng còn lại)
         guest_room_data = self.mydb.get_guest_of_room(table['Room ID'][index], 'FALSE')
         booking_id = self.mydb.get_booking_id(table['Room ID'][index])
         
-        #Take remain in inventory
-        water_remain = self.mydb.get_remain_item('water')
-        coca_remain = self.mydb.get_remain_item('coca')
-        pessi_remain = self.mydb.get_remain_item('pessi')
+        #get the current inventory table
+        inventory_table = self.mydb.get_inventory_table_in_room()
 
-        #Take amount order of room
-        water_order = self.mydb.get_order_amount(booking_id, 'water')
-        coca_order = self.mydb.get_order_amount(booking_id, 'coca')
-        pessi_order = self.mydb.get_order_amount(booking_id, 'pessi')
+        #get the order table of room 
+        order_table = self.mydb.get_order_of_room(booking_id)
+
+        #list used to store slider
+        slider_list = [""] * len(inventory_table["item name"])
+
+        
+
+
         #room and booking and book_guest => guest id and guest ==> guest infor (ok)
         guest_column, Room_Infor_Column = st.columns(2)
         with guest_column:
@@ -265,10 +253,17 @@ class Rooms_Module:
                         with reservation_4_2:
                             second_guest_dob = st.text_input(
                         "Date of Birth", f"{guest_room_data['date_of_birth'][1]}", key="second guest dob")
-                    #Update orders
-                    water_bottle = st.slider('Number of water bottles',water_order, water_remain )
-                    coca_bottle = st.slider('Number of CoCa bottles', coca_order, coca_remain )
-                    pessi_bottle = st.slider('Number of Pessi bottles', pessi_order, pessi_remain )
+                    
+
+                    #ý tưởng: lấy 2 table là inventory table và order table (ds order của 1 phòng)
+                        # nếu món item nào có trong inventory mà không có trong order => thì min_vl = 0
+                        # nếu món item nào có trong invenotry và có trong order => thì min_vl = số lượng đã order
+                    #min_val: order amount of an item   max_val: remaining amount of an item in inventory
+                    for idx, item_name in enumerate(inventory_table["item name"]):
+                        if item_name not in order_table["item name"]:
+                            slider_list[idx] = st.slider(f"Number of {item_name}",0, inventory_table["remain"][idx])
+                        else:
+                            slider_list[idx] = st.slider(f"Number of {item_name}", order_table["order amount"][order_table["item name"].index(item_name)], inventory_table["remain"][idx])
             
                 
                     
@@ -350,37 +345,44 @@ class Rooms_Module:
                         
                                 
                     if updated_infor_button:
-                        if int(table['Max people'][index]) == 4:
-                        #update guest infor
-                        #trường hợp 1 người / trường hợp 2 người 
-                        #1 bed 1 người / 2 beds 2 người
-                        # lst_guest_id = guest_room_data['guest_id']
-                            # first_dob_date = datetime.strptime(first_guest_dob, "%Y-%m-%d")
-                            # second_dob_date = datetime.strptime(second_guest_dob, "%Y-%m-%d")
-
-                            self.mydb.update_guest_info(int(guest_room_data['guest_id'][0]), first_guest_name, first_guest_phone, first_guest_address, first_guest_dob)
-                            self.mydb.update_guest_info(int(guest_room_data['guest_id'][1]), second_guest_name, second_guest_phone, second_guest_address, second_guest_dob)
-                        elif int(table['Max people'][index]) == 2:
-                            # first_dob_date = datetime.strptime(first_guest_dob, "%Y-%m-%d")
-                            self.mydb.update_guest_info(int(guest_room_data['guest_id'][0]), first_guest_name,first_guest_phone, first_guest_address, first_guest_dob)
-
-                        #update order
-                        self.mydb.update_order(booking_id, 'water', water_bottle)
-                        self.mydb.update_order(booking_id, 'coca', coca_bottle)
-                        self.mydb.update_order(booking_id, 'pessi', pessi_bottle)
-
-                        #từ booking_id => update order
-                        #từ item_id => update inventory
-                        self.mydb.update_inventory('water', water_bottle - water_order)
-                        self.mydb.update_inventory('coca', coca_bottle - coca_order)
-                        self.mydb.update_inventory('pessi', pessi_bottle - pessi_order)
-
                         with st.spinner('Processing...'):
                             time.sleep(2)
-                        checkin_success_msg = st.success("Update successfully") 
-                        time.sleep(1)
-                        checkin_success_msg.empty()
-                        st.experimental_rerun()
+
+                        check_valid_info = guest_validation(first_guest_name,first_guest_phone,first_guest_address,first_guest_dob,"first")
+
+                        if table['Room beds'][index] == 2:
+                            check_valid_info = guest_validation(second_guest_name,second_guest_phone,second_guest_address,second_guest_dob,"second")
+
+                        if check_valid_info == False:
+                            st.error("Please retype the information!")
+                        else:
+                            if int(table['Max people'][index]) == 4:
+                            #update guest infor
+                            #trường hợp 1 người / trường hợp 2 người 
+                            #1 bed 1 người / 2 beds 2 người
+                            # lst_guest_id = guest_room_data['guest_id']
+                                # first_dob_date = datetime.strptime(first_guest_dob, "%Y-%m-%d")
+                                # second_dob_date = datetime.strptime(second_guest_dob, "%Y-%m-%d")
+
+                                self.mydb.update_guest_info(int(guest_room_data['guest_id'][0]), first_guest_name, first_guest_phone, first_guest_address, first_guest_dob)
+                                self.mydb.update_guest_info(int(guest_room_data['guest_id'][1]), second_guest_name, second_guest_phone, second_guest_address, second_guest_dob)
+                            elif int(table['Max people'][index]) == 2:
+                                # first_dob_date = datetime.strptime(first_guest_dob, "%Y-%m-%d")
+                                self.mydb.update_guest_info(int(guest_room_data['guest_id'][0]), first_guest_name,first_guest_phone, first_guest_address, first_guest_dob)
+
+                            #update order
+                            #item có số lượng >0 mới được thêm vào
+                            for idx,item_slider in enumerate(slider_list):
+                                if item_slider > 0:
+                                    self.mydb.update_order(booking_id, inventory_table['item name'][idx],item_slider)
+                                    self.mydb.update_inventory(inventory_table['item name'][idx],item_slider - order_table['order amount'][order_table['item name'].index( inventory_table['item name'][idx])])
+                    
+                            with st.spinner('Processing...'):
+                                time.sleep(2)
+                            checkin_success_msg = st.success("Update successfully") 
+                            time.sleep(1)
+                            checkin_success_msg.empty()
+                            st.experimental_rerun()
 
                         
 
@@ -456,14 +458,9 @@ class Rooms_Module:
                         if Add_room_button:
                             with st.spinner('Processing...'):
                                 time.sleep(2)
+                                
                             #check validation of information 
-                            check_valid_info = True
-                            if room_name in list_room_name:
-                                st.error("Room name is not valid/duplicated")
-                                check_valid_info = False
-                            if room_price == "" or beds == "" or people == "":
-                                st.error("Some information is empty")
-                                check_valid_info = False
+                            check_valid_info = room_validation(list_room_name,room_name, floor, room_type, room_price, beds, people)
 
                             if check_valid_info == False:
                                 st.error("Please retype the information")
