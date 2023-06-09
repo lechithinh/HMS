@@ -144,7 +144,7 @@ class Rooms_Module:
 
                     # kiểm tra thông tin check-in
                     check_valid_info = True
-                    if first_guest_phone.isnumeric() == False or len(first_guest_phone) != 10:
+                    if len(first_guest_phone) != 10:
                         st.error("Check **phone number** of first guest again!")
                         check_valid_info = False
                     if first_guest_name.isalpha() == False:
@@ -152,7 +152,7 @@ class Rooms_Module:
                         check_valid_info = False
                     
                     if table['Room beds'][index] == 2:
-                        if second_guest_phone.isnumeric() == False or len(second_guest_phone) != 10:
+                        if len(second_guest_phone) != 10:
                             st.error("Check **phone number** of second guest again!")
                             check_valid_info = False
                         if second_guest_name.isalpha() == False:
@@ -165,6 +165,7 @@ class Rooms_Module:
                     else:
                         #update to guest infor to data
                         if(int(table['Max people'][index]) == 2):
+
                             self.mydb.add_a_guest(first_guest_name,first_guest_phone,first_guest_address,first_guest_dob)
                             
                         else:
@@ -177,7 +178,7 @@ class Rooms_Module:
 
                         
                         # add booking
-                        self.mydb.add_a_booking(table['Room ID'][index], checkin_datetime, checkout_datetime,False)
+                        self.mydb.add_a_booking(table['Room ID'][index], checkin_datetime, checkout_datetime,'FALSE')
 
                         #get booking id
                         booking_id = self.mydb.get_booking_id(table['Room ID'][index])
@@ -208,10 +209,14 @@ class Rooms_Module:
                     
         with room_infor_column:
             self.Update_room_infor(table, index)
+    
+    
+
 
     def view_occupied_room(self, table,index, staff_id):
          #Lấy dữ liệu của guest view lên và dữ liệu của order và của inventory (số lượng còn lại)
-        guest_room_data = self.mydb.get_guest_of_room(table['Room ID'][index], False)
+        guest_room_data = self.mydb.get_guest_of_room(table['Room ID'][index], 'FALSE')
+        booking_id = self.mydb.get_booking_id(table['Room ID'][index])
         
         #Take remain in inventory
         water_remain = self.mydb.get_remain_item('water')
@@ -219,9 +224,9 @@ class Rooms_Module:
         pessi_remain = self.mydb.get_remain_item('pessi')
 
         #Take amount order of room
-        water_order = self.mydb.get_order_amount(table['Room ID'][index], 'water')
-        coca_order = self.mydb.get_order_amount(table['Room ID'][index], 'coca')
-        pessi_order = self.mydb.get_order_amount(table['Room ID'][index], 'pessi')
+        water_order = self.mydb.get_order_amount(booking_id, 'water')
+        coca_order = self.mydb.get_order_amount(booking_id, 'coca')
+        pessi_order = self.mydb.get_order_amount(booking_id, 'pessi')
         #room and booking and book_guest => guest id and guest ==> guest infor (ok)
         guest_column, Room_Infor_Column = st.columns(2)
         with guest_column:
@@ -261,9 +266,9 @@ class Rooms_Module:
                             second_guest_dob = st.text_input(
                         "Date of Birth", f"{guest_room_data['date_of_birth'][1]}", key="second guest dob")
                     #Update orders
-                    water_bottle = st.slider('Number of water bottles', 0, water_remain, water_order)
-                    coca_bottle = st.slider('Number of CoCa bottles', 0, coca_remain, coca_order)
-                    pessi_bottle = st.slider('Number of Pessi bottles', 0, pessi_remain, pessi_order)
+                    water_bottle = st.slider('Number of water bottles',water_order, water_remain )
+                    coca_bottle = st.slider('Number of CoCa bottles', coca_order, coca_remain )
+                    pessi_bottle = st.slider('Number of Pessi bottles', pessi_order, pessi_remain )
             
                 
                     
@@ -274,8 +279,13 @@ class Rooms_Module:
                     with update_col:
                         updated_infor_button = st.form_submit_button("Update infor", type = "primary")
                     
-                    booking_id = self.mydb.get_booking_id(table['Room ID'][index])
                     if checkout_button:
+                        #update room status after checkout
+                        self.mydb.Update_room_status(table['Room ID'][index])
+
+                        #update booking status --> after checkout, booking status change to 'isClose'
+                        self.mydb.Update_isClose_booking(table['Room ID'][index])
+
                         #get date, room price, order (item + soluong + giá), total price. 
                         table_bill = self.mydb.finalize_a_bill(booking_id)
                         total_price = total_price = table_bill['bill_price'][0]
@@ -345,17 +355,16 @@ class Rooms_Module:
                         #trường hợp 1 người / trường hợp 2 người 
                         #1 bed 1 người / 2 beds 2 người
                         # lst_guest_id = guest_room_data['guest_id']
-                            first_dob_date = datetime.strptime(first_guest_dob, "%Y-%m-%d")
-                            second_dob_date = datetime.strptime(second_guest_dob, "%Y-%m-%d")
+                            # first_dob_date = datetime.strptime(first_guest_dob, "%Y-%m-%d")
+                            # second_dob_date = datetime.strptime(second_guest_dob, "%Y-%m-%d")
 
-                            self.mydb.update_guest_info(int(guest_room_data['guest_id'][0]), first_guest_name, int(first_guest_phone), first_guest_address, first_dob_date)
-                            self.mydb.update_guest_info(int(guest_room_data['guest_id'][1]), second_guest_name, int(second_guest_phone), second_guest_address, second_dob_date)
+                            self.mydb.update_guest_info(int(guest_room_data['guest_id'][0]), first_guest_name, first_guest_phone, first_guest_address, first_guest_dob)
+                            self.mydb.update_guest_info(int(guest_room_data['guest_id'][1]), second_guest_name, second_guest_phone, second_guest_address, second_guest_dob)
                         elif int(table['Max people'][index]) == 2:
-                            first_dob_date = datetime.strptime(first_guest_dob, "%Y-%m-%d")
-                            self.mydb.update_guest_info(int(guest_room_data['guest_id'][0]), first_guest_name, int(first_guest_phone), first_guest_address, first_dob_date)
+                            # first_dob_date = datetime.strptime(first_guest_dob, "%Y-%m-%d")
+                            self.mydb.update_guest_info(int(guest_room_data['guest_id'][0]), first_guest_name,first_guest_phone, first_guest_address, first_guest_dob)
 
                         #update order
-                        
                         self.mydb.update_order(booking_id, 'water', water_bottle)
                         self.mydb.update_order(booking_id, 'coca', coca_bottle)
                         self.mydb.update_order(booking_id, 'pessi', pessi_bottle)
@@ -366,6 +375,14 @@ class Rooms_Module:
                         self.mydb.update_inventory('coca', coca_bottle - coca_order)
                         self.mydb.update_inventory('pessi', pessi_bottle - pessi_order)
 
+                        with st.spinner('Processing...'):
+                            time.sleep(2)
+                        checkin_success_msg = st.success("Update successfully") 
+                        time.sleep(1)
+                        checkin_success_msg.empty()
+                        st.experimental_rerun()
+
+                        
 
         with Room_Infor_Column:
             self.Update_room_infor(table, index)
