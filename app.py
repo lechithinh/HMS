@@ -2,17 +2,18 @@ import streamlit as st
 from streamlit_option_menu import option_menu
 
 #Module
-from dashboard import Dashboard
-from rooms import Rooms
-from inventory import Inventory
-from staff import Staff
-from staff_profile import StaffProfile
+from Dashboard.dashboard import Dashboard
+from Rooms.rooms import Rooms
+from Inventory.inventory import Inventory
+from Staff.staff import Staff
+from Profile.profile import Profile
 
 
 
 
 
-def MyWeb(authenticator, mydb, staff_id):
+
+def MyApp(mydb, staff_id):
     # SideBar
     with st.sidebar:
         selected = option_menu(f"Welcome {st.session_state['name']}", ["Dashboard", 'Rooms', 'Inventory', 'Staff', 'Edit Profile'],
@@ -33,6 +34,6 @@ def MyWeb(authenticator, mydb, staff_id):
     elif selected == "Staff":
         Staff(mydb)
     else:
-        StaffProfile(mydb, staff_id)
+        Profile(mydb, staff_id)
 
       

@@ -1,7 +1,7 @@
 import streamlit as st
 import streamlit_authenticator as stauth
 from database import DataBase
-from app import MyWeb
+from app import MyApp
 import time
 
 
@@ -36,7 +36,7 @@ if st.session_state['authentication_status']: #Login successfully
     time.sleep(1)
     #The app
     staff_id = mydb.get_staff_id(username)
-    MyWeb(authenticator, mydb, staff_id)
+    MyApp(mydb, staff_id)
     with st.sidebar:
         st.divider()
         authenticator.logout('Logout', 'sidebar')

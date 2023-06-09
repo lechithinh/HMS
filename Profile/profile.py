@@ -1,10 +1,15 @@
 import streamlit as st
+import time
+
+#Helpers
+from global_helpers import DisplayTextCenter
 
 
-def StaffProfile(mydb,staff_id):
-    st.markdown('''
-            <h3 style='text-align: center;  color: black;'>EDIT YOUR PROFILE</h3>
-            ''', unsafe_allow_html=True)
+    
+def Profile(mydb, staff_id):
+    #Show the title
+    DisplayTextCenter("Edit Your Profile")
+    
     staff_data = mydb.get_a_staff(staff_id)
     with st.form("Add a new item"):
         isUpdatedSucess = False              
@@ -28,7 +33,9 @@ def StaffProfile(mydb,staff_id):
                     with col6:
                         update_profile = st.form_submit_button("Save", type = "primary") 
                         if update_profile:
-                            isUpdatedSucess = mydb.Update_One_Staff(staff_name,staff_phone,staff_address,staff_date,staff_username,staff_role,staff_id)
+                            isUpdatedSucess =  mydb.Update_One_Staff(staff_name,staff_phone,staff_address,staff_date,staff_username,staff_role,staff_id)
                             
                 if isUpdatedSucess:
-                    st.success("You update has been completed")
+                    success_message = st.success("You update has been completed")
+                    time.sleep(2)
+                    success_message.empty()
