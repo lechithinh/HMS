@@ -1,7 +1,7 @@
 import streamlit as st
 import streamlit_authenticator as stauth
 from database import DataBase
-from app import MyApp
+from app import Owner_App, Manager_App, Staff_App
 import time
 
 
@@ -36,7 +36,13 @@ if st.session_state['authentication_status']: #Login successfully
     time.sleep(1)
     #The app
     staff_id = mydb.get_staff_id(username)
-    MyApp(mydb, staff_id)
+    staff_role = mydb.get_staff_role(staff_id)
+    if staff_role == "Owner":
+        Owner_App(mydb, staff_id)
+    elif staff_role == "Manager":
+        Manager_App(mydb, staff_id)
+    else:
+        Staff_App(mydb, staff_id) 
     with st.sidebar:
         st.divider()
         authenticator.logout('Logout', 'sidebar')

@@ -20,6 +20,13 @@ class DataBase:
         self.Cursor.execute(query, (username, ))
         data = self.Cursor.fetchone()
         return data[0]
+
+    def get_staff_role(self, staff_id):
+        query = "SELECT role FROM staff WHERE staff_id = %s"
+        self.Cursor.execute(query, (staff_id, ))
+        data = self.Cursor.fetchone()
+        return data[0]
+
     
     def get_staff_login(self):
         query = "SELECT staff_name, username, password FROM staff"

@@ -1,5 +1,6 @@
 import streamlit as st
-from streamlit_option_menu import option_menu
+
+from global_helpers import Owner_sidebar, Manager_sidebar, Staff_sidebar
 
 #Module
 from Dashboard.dashboard import Dashboard
@@ -10,20 +11,10 @@ from Profile.profile import Profile
 
 
 
-
-
-
-def MyApp(mydb, staff_id):
+def Owner_App(mydb, staff_id):
     # SideBar
     with st.sidebar:
-        selected = option_menu(f"Welcome {st.session_state['name']}", ["Dashboard", 'Rooms', 'Inventory', 'Staff', 'Edit Profile'],
-                            icons=['kanban-fill', 'grid-1x2-fill',
-                                     'house-fill', 'person-lines-fill', 'person-fill'],
-                            menu_icon="cast",
-                            default_index=0,
-                            styles={
-            "container": {"padding": "0!important", "background-color": "#f1f2f6"},
-        })
+        selected = Owner_sidebar()
 
     if selected == "Dashboard":
         Dashboard(mydb)
@@ -33,6 +24,29 @@ def MyApp(mydb, staff_id):
         Inventory(mydb)
     elif selected == "Staff":
         Staff(mydb)
+    else:
+        Profile(mydb, staff_id)
+        
+def Manager_App(mydb, staff_id):
+        # SideBar
+    with st.sidebar:
+        selected = Manager_sidebar()
+    if selected == "Dashboard":
+        Dashboard(mydb)
+    elif selected == "Rooms":
+        Rooms(mydb, staff_id)
+    elif selected == "Inventory":
+        Inventory(mydb)
+    else:
+        Profile(mydb, staff_id)
+
+def Staff_App(mydb, staff_id):
+    with st.sidebar:
+        selected = Staff_sidebar()
+    if selected == "Rooms":
+        Rooms(mydb, staff_id)
+    elif selected == "Inventory":
+        Inventory(mydb)
     else:
         Profile(mydb, staff_id)
 
