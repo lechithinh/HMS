@@ -1,0 +1,1 @@
+print("ham can xu li")
