@@ -4,6 +4,7 @@ from streamlit_card import card
 from streamlit_extras.metric_cards import style_metric_cards
 import datetime
 import base64
+
 import time
 import streamlit_authenticator as stauth
 from Staff.staff_helpers import display_table_staff, check_valid_phone, check_user_name, check_name_staff
@@ -139,10 +140,12 @@ class Staff_Module:
                 with rows_columns[1][1]:
                     password = st.text_input(
                         ":blue[**Password**]", placeholder="Enter password", type="password")
+
                     if password:
                         hashed_password = stauth.Hasher([password]).generate()
                 with rows_columns[2][0]:
                     Date_of_birth = st.date_input(
+
                         ":blue[**Enter date of birth**]")
                 with rows_columns[2][1]:
                     Role = st.selectbox(
@@ -190,4 +193,6 @@ def Staff(mydb):
     with View_staff_infor:
         Staff_instance.view_staff_infor()
     with Add_a_staff:
+
         Staff_instance.Add_a_staff()
+

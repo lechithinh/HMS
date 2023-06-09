@@ -1,10 +1,12 @@
 import streamlit as st
 import time
+
 import streamlit_authenticator as stauth
 
 #Helpers
 from global_helpers import DisplayTextCenter
 from Staff.staff_helpers import check_valid_phone, check_name_staff
+
 
     
 def Profile(mydb, staff_id):
@@ -18,6 +20,7 @@ def Profile(mydb, staff_id):
                 row_1_1, row_1_2 = st.columns(2)
                 row_2_1, row_2_2 = st.columns(2)
                 row_3_1, row_3_2 = st.columns(2)
+
                 row_4_1, row_4_2= st.columns(2)
                 with row_1_1:
                     staff_name = st.text_input(":blue[**Your Name**]", staff_data[0])

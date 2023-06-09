@@ -5,6 +5,7 @@ from database import DataBase
 from app import Owner_App, Manager_App, Staff_App
 import time
 import os
+
 import base64
 #Load variables
 from dotenv import load_dotenv #pip install python-dotenv
@@ -23,11 +24,11 @@ names = staff_login['staff_name']
 usernames = staff_login['username']
 hashed_passwords = staff_login['password']
 
+
 def get_base64(bin_file):
     with open(bin_file, 'rb') as f:
         data = f.read()
     return base64.b64encode(data).decode()
-
 
 def set_background(png_file):
     bin_str = get_base64(png_file)
