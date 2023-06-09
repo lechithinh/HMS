@@ -4,7 +4,7 @@ from streamlit_option_menu import option_menu
 
 def DisplayTextCenter(TextContent):
     return st.markdown(f'''
-            <h3 style='text-align: center;  color: black;'>{TextContent}</h3>
+            <h3 style='text-align: center;  color: #1E90FF;'>{TextContent}</h3>
             ''', unsafe_allow_html=True)
 
 

@@ -82,6 +82,16 @@ class DataBase:
         query = "UPDATE staff SET staff_name = %s, phone_number = %s, address = %s, date_of_birth = %s, username = %s, role = %s WHERE staff_id = %s"
         try:
             self.Cursor.execute(query, (Name, Phone, Address, DateOfBirth, Username, Role,staff_id))
+
+            self.mydb.commit()
+            return True
+        except:
+            return False
+    def Update_Profile_Staff(self, Name, Phone, Address, DateOfBirth, Username, Role, password, staff_id):
+        query = "UPDATE staff SET staff_name = %s, phone_number = %s, address = %s, date_of_birth = %s, username = %s, role = %s, password = %s WHERE staff_id = %s"
+        try:
+            self.Cursor.execute(query, (Name, Phone, Address, DateOfBirth, Username, Role, password, staff_id))
+
             self.mydb.commit()
             return True
         except:
@@ -450,7 +460,7 @@ class DataBase:
         return data[0]
 
 def main():
-    mydb = DataBase("127.0.0.1", "root", "uynnibeo2104", "HMS")
+    mydb = DataBase("localhost", "root", "huynhcongthien", "HMS")
     
     
     
