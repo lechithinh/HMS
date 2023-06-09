@@ -3,9 +3,17 @@ import streamlit_authenticator as stauth
 from database import DataBase
 from app import Owner_App, Manager_App, Staff_App
 import time
+import os
 
+#Load variables
+from dotenv import load_dotenv #pip install python-dotenv
+load_dotenv()
+PORT= os.getenv('PORT')
+USERNAME= os.getenv('USER')
+PASSWORD= os.getenv('PASSWORD')
+DATABASE= os.getenv('DATABASE')
 
-mydb = DataBase("127.0.0.1", "root", "root", "HMS")
+mydb = DataBase(PORT, USERNAME, PASSWORD, DATABASE)
     
 
 staff_login = mydb.get_staff_login()
