@@ -1,5 +1,27 @@
 import streamlit as st
 from streamlit_option_menu import option_menu
+from PIL import Image
+def LoginPageInfor():
+    st.markdown(f'''
+            <h2 style='text-align: center;  color: black;'>HMSpro | HOTEL MANAGEMENT SYSTEM </h2>
+            ''', unsafe_allow_html=True)
+    st.write(f"**HMSpro** is a cutting-edge, cloud-based solution that empowers small hoteliers to manage their property more effectively and achieve greater success.")
+    col1, col2, col3 = st.columns(3)
+    with col1: 
+        image1 = Image.open('assets/data_centralization.png')
+        st.image(image1, width=300, caption="Data centralization")
+        image7 = Image.open('assets/configuration.png')
+        st.image(image7, width=300, caption="Easy Configuration")
+    with col2:
+        image3 = Image.open('assets/data_statistics.png')
+        st.image(image3, width=305, caption="Data statistics")
+        image5 = Image.open('assets/room_management.png')
+        st.image(image5, width=305, caption="Room Management")
+    with col3: 
+        image3 = Image.open('assets/staff_management.png')
+        st.image(image3, width=305, caption="Staff Management")
+        image4 = Image.open('assets/inventory_management.png')
+        st.image(image4, width=305, caption="Inventory Management")
 
 
 def DisplayTextCenter(TextContent):
