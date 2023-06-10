@@ -76,13 +76,20 @@ if st.session_state['authentication_status']: #Login successfully
     staff_role = mydb.get_staff_role(staff_id)
     if staff_role == "Owner":
         Owner_App(mydb, staff_id)
+        
     elif staff_role == "Manager":
         Manager_App(mydb, staff_id)
     else:
         Staff_App(mydb, staff_id) 
     with st.sidebar:
         st.divider()
+        st.markdown(f'''
+            <h3 style='text-align: center;  color: red;'>{name.upper()} - {staff_role.upper()}</h3>
+            ''', unsafe_allow_html=True)
         authenticator.logout('Logout', 'sidebar')
+
+       
+        
 
 elif st.session_state['authentication_status'] == False: 
     #Our demo image

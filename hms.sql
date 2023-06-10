@@ -23,7 +23,7 @@ DROP TABLE IF EXISTS Guest;
 CREATE TABLE `Guest`(
 	guest_id int NOT NULL AUTO_INCREMENT,
     guest_name varchar(45) DEFAULT NULL,
-    phone_number int DEFAULT NULL unique,
+    phone_number varchar(45) DEFAULT NULL unique,
     address varchar(100) DEFAULT NULL,
     date_of_birth date DEFAULT NULL,
 	created_at datetime default current_timestamp(),

@@ -49,7 +49,7 @@ class Staff_Module:
                     column_card, column_infor = st.columns(2)
                     # card for the selected room
                     with column_card:
-                        with open(f"assets/staff/Unknown_person.jpg", "rb") as f:
+                        with open(f"assets/staff/username_.png", "rb") as f:
                             data = f.read()
                             encoded = base64.b64encode(data)
                         data = "data:image/png;base64," + \
@@ -119,6 +119,8 @@ class Staff_Module:
                                     "Staff information has been updated")
                             if isRemove:
                                 st.success("Remove staff successful")
+                                time.sleep(1)
+                                st.experimental_rerun()
 
     def Add_a_staff(self):
         Add_staff_message = False

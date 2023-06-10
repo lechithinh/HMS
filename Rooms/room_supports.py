@@ -1,5 +1,6 @@
 import streamlit as st
 import string
+
 def check_phone(guest_phone):
     for temp in guest_phone:
         if temp.isalpha():
@@ -38,12 +39,12 @@ def guest_validation(guest_name, guest_phone, guest_address, guest_dob, stt_gues
 def room_validation(list_of_room, room_name, floor, room_type, room_price, beds, people):
     isValid = True
 
-    if room_name not in list_of_room or room_name == "":
-        isValid = False
-        st.error("Check **room name** again!")
+    # if room_name not in list_of_room or room_name == "":
+    #     isValid = False
+    #     st.error("Check **room name** again!")
 
-    if floor == "" or room_type == "" or room_price == "" or beds == "" or people == "":
-        isValid = False
-        st.error("Check other again")
+    # if floor == "" or room_type == "" or room_price == "" or beds == "" or people == "":
+    #     isValid = False
+    #     st.error("Check other again")
     
     return isValid

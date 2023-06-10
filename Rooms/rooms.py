@@ -437,21 +437,21 @@ class Rooms_Module:
                 row_2_1, row_2_2 = st.columns(2)
                 row_3_1, row_3_2 = st.columns(2)
                 with row_1_1:
-                    room_name = st.text_input('Room Name', placeholder='Enter the room name')
+                    room_name = st.text_input(':blue[**Room Name**]', placeholder='Enter the room name')
                 with row_1_2:
                     room_type =   st.selectbox(
-                        'Select the type',
+                        ':blue[**Select the type**]',
                         ('NORMAL', 'VIP'))
                 with row_2_1:
                     floor = st.selectbox(
-                        'Select the floor',
+                        ':blue[**Select the floor**]',
                         ('1', '2'))
                 with row_2_2:
-                    room_price = st.text_input('Room Price', placeholder='Enter the price')
+                    room_price = st.text_input(':blue[**Room price**]', placeholder='Enter the price')
                 with row_3_1:
-                    beds = st.text_input('Number of beds', placeholder='Enter number of beds')
+                    beds = st.text_input(':blue[**Room Beds**]', placeholder='Enter number of beds')
                 with row_3_2:
-                    people = st.text_input('Total people', placeholder='Enter total people')
+                    people = st.text_input(':blue[**Max people**]', placeholder='Enter total people')
                     _, _, _, col_4 = st.columns(4)
                     with col_4:
                         Add_room_button = st.form_submit_button("Add a room", type = "primary")
@@ -459,7 +459,7 @@ class Rooms_Module:
                             with st.spinner('Processing...'):
                                 time.sleep(2)
                                 
-                            #check validation of information 
+                            #UPDATED ROOM VALIDATION
                             check_valid_info = room_validation(list_room_name,room_name, floor, room_type, room_price, beds, people)
 
                             if check_valid_info == False:

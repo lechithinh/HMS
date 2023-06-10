@@ -44,19 +44,19 @@ def Profile(mydb, staff_id):
                    
                     with col4:
                         
-                        update_profile = st.form_submit_button("Save", type = "primary") 
+                        update_profile = st.form_submit_button("Save settings", type = "primary") 
                         if update_profile:
                             with st.spinner('Processing...'):
                                 time.sleep(2)
                             if check_valid_phone(staff_phone) and check_name_staff(staff_name):
-                                if staff_password:
+                                if staff_password: #update password
                                     isUpdatedSucess =  mydb.Update_Profile_Staff(staff_name,staff_phone,staff_address,staff_date,staff_username,staff_role, hashed_password[0], staff_id)
-                                else:
+                                else: 
                                     isUpdatedSucess = mydb.Update_One_Staff(staff_name, staff_phone, staff_address, staff_date, staff_username, staff_role, staff_id)
                             elif check_valid_phone(staff_phone) == False:
                                 st.error("Phone number unvalid")
                             elif check_name_staff(staff_name) == False:
-                                st.error("Staff name must be alphabet")
+                                st.error("Nname must be alphabet")
                             
                 if isUpdatedSucess:
                     st.success("You update has been completed")

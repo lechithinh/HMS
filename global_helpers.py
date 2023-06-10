@@ -36,7 +36,7 @@ def AddFiveRows():
 
 #Side bar
 def Owner_sidebar():
-    selected = option_menu(f"Welcome {st.session_state['name']}", ["Dashboard", 'Rooms', 'Inventory', 'Staff', 'Edit Profile'],
+    selected = option_menu(f"HMS System", ["Dashboard", 'Rooms', 'Inventory', 'Staff', 'Edit Profile'],
                             icons=['kanban-fill', 'grid-1x2-fill',
                                      'house-fill', 'person-lines-fill', 'person-fill'],
                             menu_icon="cast",
@@ -47,7 +47,7 @@ def Owner_sidebar():
     return selected
 
 def Manager_sidebar():
-    selected = option_menu(f"Welcome {st.session_state['name']}", ["Dashboard", 'Rooms', 'Inventory', 'Edit Profile'],
+    selected = option_menu(f"HMS System", ["Dashboard", 'Rooms', 'Inventory', 'Edit Profile'],
                             icons=['kanban-fill', 'grid-1x2-fill',
                                      'house-fill', 'person-fill'],
                             menu_icon="cast",
@@ -58,7 +58,7 @@ def Manager_sidebar():
     return selected
 
 def Staff_sidebar():
-    selected = option_menu(f"Welcome {st.session_state['name']}", ['Rooms', 'Inventory', 'Edit Profile'],
+    selected = option_menu(f"HMS System", ['Rooms', 'Inventory', 'Edit Profile'],
                             icons=['grid-1x2-fill',
                                      'house-fill', 'person-fill'],
                             menu_icon="cast",

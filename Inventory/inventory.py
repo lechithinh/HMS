@@ -15,12 +15,12 @@ class Inventory_Module:
             isProductadded = False              
             with st.container():
                 # item_name = st.selectbox("Product Name", self.table_inventory['item_name'])
-                item_name = st.text_input("Product Name",placeholder="Enter product name")
+                item_name = st.text_input(":blue[**Product Name**]",placeholder="Enter product name")
                 col1, col2 = st.columns(2)
                 with col1:
-                    total = st.slider('Total', 0, 150, 0)
+                    total = st.slider(':blue[**Number of products**]', 0, 150, 0)
                 with col2:
-                    price = st.number_input("Price per item", 5000, step= 500)
+                    price = st.number_input(":blue[**Price per item**]", 5000, step= 500)
                     _, _, _, col4 = st.columns(4)
                     with col4:
                         add_item = st.form_submit_button("Add", type = "primary")
