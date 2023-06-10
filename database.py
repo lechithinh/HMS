@@ -126,7 +126,7 @@ class DataBase:
         """
         self.Cursor.execute(query1)
         data1 = self.Cursor.fetchall()
-        print(data1)
+
         #convert to dictionary
         table_data = {
             "View information": [],
@@ -168,7 +168,6 @@ class DataBase:
             if isExist == False:
                 table_data["Num. adult"].append(0)
                 table_data["Num. child"].append(0)
-        print(table_data)
         return table_data
     
     def add_a_guest(self, first_guest_name,first_guest_phone,first_guest_address,first_guest_dob):
@@ -369,7 +368,7 @@ class DataBase:
             "created_at": [],
             "modified_at": []
         }
-        # print(data)
+     
         for item in data:
             guest_data['guest_id'].append(item[0])
             guest_data["update"].append(False)

@@ -1,7 +1,7 @@
 CREATE database IF NOT EXISTS HMS;
 
 use hms;
-select * from staff
+
 
 DROP TABLE IF EXISTS room;
 CREATE TABLE `Room`(
@@ -39,7 +39,7 @@ CREATE TABLE `Inventory`(
     total int DEFAULT NULL,
     remain int DEFAULT NULL,
     created_at datetime default current_timestamp(),
-    isActive varchar(45) DEFAULT 'TRUE'
+    isActive varchar(45) DEFAULT 'TRUE',
     primary key(item_id)
 )engine=InnoDB auto_increment=1 DEFAULT CHARSET=utf8mb4 collate=utf8mb4_0900_ai_ci;
 
@@ -112,6 +112,15 @@ CREATE TABLE `Bill`(
     CONSTRAINT FK_Bill_Booking FOREIGN KEY(booking_id) references Booking(booking_id) ON DELETE cascade
 )engine=InnoDB auto_increment=1 DEFAULT CHARSET=utf8mb4 collate=utf8mb4_0900_ai_ci;
 
+#Only insert this 
+insert into staff(staff_name, phone_number, username, address, date_of_birth, `role`, `password`) values
+('Huynh Thien', 0832244567, 'huynhcongthien', 'Long an', '2003-5-28', 'Staff', '$2b$12$6nf/QuObvzgu50.d/pmUse1Go4aU6ToRpyfkWCnWN8l0ghIXgRbPK'),
+('Nguyen Minh Tri', 083776543, 'nguyenminhtri', 'Bien Hoa', '2003-6-29', 'Manager', '$2b$12$4LDW4JVt7HP5nLZzb3ImWenAFesqwCCgX0OaY5ZOnB4dKFf8ACTMy'),
+('Le Chi Thinh', 083772543, 'lechithinh', 'Ca Mau', '2003-5-12', 'Owner', '$2b$12$qhYvMNel/QlNYlV9PgHVe.tkokxmTzXBxpRAyYle.10G1xmlCbrH.');
+
+
+
+
 
 INSERT into room (room_name,floor,room_type,room_price,room_beds,max_people,`status`,isActive) values 
 ('Room1',	1,	'NORMAL'	,200,	1,	2,	'Occupied',	'TRUE'),
@@ -124,10 +133,7 @@ INSERT INTO Guest (guest_name, phone_number, address, date_of_birth) values
 ('Cong Thien', 431566443, 'Ho Chi Minh', '2003-12-6'),
 ('Minh Tri', 123456789, 'Lam Dong', '2003-7-12');
 
-insert into staff(staff_name, phone_number, username, address, date_of_birth, `role`, `password`) values
-('Huynh Thien', 0832244567, 'huynhcongthien', 'Long an', '2003-5-28', 'Staff', '456'),
-('Nguyen Minh Tri', 083776543, 'nguyenminhtri', 'Bien Hoa', '2003-6-29', 'Manager', '789'),
-('Le Chi Thinh', 083772543, 'lechithinh', 'Ca Mau', '2003-5-12', 'Owner', '123');
+
 
 INSERT INTO Staff(staff_name, phone_number, username, address, date_of_birth, role, Password) values
 ('Nguyen Van A', 822098222, 'vana', 'Ca Mau', '1990-5-12', 'Manager', 'X'),

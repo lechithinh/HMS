@@ -2,7 +2,7 @@ import streamlit as st
 import time
 #Helpers
 from global_helpers import DisplayTextCenter
-from Inventory.inventory_helpers import check_item_name
+from Inventory.inventory_helpers import check_duplicate_item
 class Inventory_Module:
     def __init__(self, mydb):
         self.mydb = mydb
@@ -15,7 +15,7 @@ class Inventory_Module:
             if value:
                 count += 1
         if count > 1:
-            st.error("**Only choose one item!**", icon="🚨")
+            st.error("**Please select a single record.!**", icon="🚨")
         else:
             for value in self.table_inventory['Update']:
                 if value:
@@ -51,12 +51,14 @@ class Inventory_Module:
                                     if udpate_button:
                                         with st.spinner('Processing...'):
                                             time.sleep(2)
-                                        if item_name != "" and check_item_name(item_name, self.table_inventory['item_name']) == True:
+                                        
+                                        #check if item is valid to add
+                                        if item_name != "" and check_duplicate_item(item_name, self.table_inventory['item_name']) == True:
                                             isUpdateSuccess = self.mydb.update_item_inventory(item_id, item_name, int(item_price), int(item_total), int(item_remain))
                                         elif item_name == "":
-                                            st.error("Enter item name")
-                                        elif check_item_name(item_name, self.table_inventory['item_name']) == False:
-                                            st.error('Duplicate item name')
+                                            st.error("Item name must not be empty!")
+                                        elif check_duplicate_item(item_name, self.table_inventory['item_name']) == False:
+                                            st.error('The item is in stock!')
                             if isUpdateSuccess:
                                 st.success("Item information has been updated")
                                 time.sleep(2)
@@ -71,26 +73,27 @@ class Inventory_Module:
         with st.form("Add a new item"):
             isProductadded = False              
             with st.container():
-                # item_name = st.selectbox("Product Name", self.table_inventory['item_name'])
+              
                 item_name = st.text_input(":blue[**Product Name**]",placeholder="Enter product name")
                 col1, col2 = st.columns(2)
                 with col1:
                     total = st.slider(':blue[**Number of products**]', 0, 150, 0)
                 with col2:
                     price = st.number_input(":blue[**Price per item**]", 5000, step= 500)
-                    _, _, _, col4 = st.columns(4)
-                    with col4:
-                        add_item = st.form_submit_button("Add", type = "primary")
-                        if add_item:
-                            with st.spinner('Processing...'):
-                                time.sleep(2)
-                            if item_name != "" and check_item_name(item_name, self.table_inventory['item_name']):
-                                isProductadded = self.mydb.add_inventory(item_name,total,price)
-                            elif item_name == "":
-                                st.error("Enter item name")
-                            elif check_item_name(item_name, self.table_inventory['item_name']) == False:
-                                st.error('Duplicate item name')
-                            
+
+                add_item = st.form_submit_button("Add an item", type = "primary")
+                if add_item:
+                    with st.spinner('Processing...'):
+                        time.sleep(2)
+                    
+                    #check if item is valid to add
+                    if item_name != "" and check_duplicate_item(item_name, self.table_inventory['item_name']):
+                        isProductadded = self.mydb.add_inventory(item_name,total,price)
+                    elif item_name == "":
+                        st.error("Item name must not be empty!")
+                    elif check_duplicate_item(item_name, self.table_inventory['item_name']) == False:
+                        st.error('The item is in stock!')
+                        
                             
             if isProductadded:
                 st.success("You have added a new product")
