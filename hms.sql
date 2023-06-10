@@ -81,6 +81,8 @@ CREATE TABLE Booking
     room_id int not null,
 	checkin_date datetime DEFAULT current_timestamp(),
     checkout_date datetime DEFAULT current_timestamp(),
+    num_adult int default null,
+    num_child int default null,
     isClose varchar(45) DEFAULT 'FALSE',
     primary key(booking_id),
     CONSTRAINT FK_Booking_Room FOREIGN KEY (room_id) REFERENCES Room(room_id) ON DELETE CASCADE
