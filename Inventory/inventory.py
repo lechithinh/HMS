@@ -53,12 +53,14 @@ class Inventory_Module:
                                             time.sleep(2)
                                         
                                         #check if item is valid to add
-                                        if item_name != "" and check_duplicate_item(item_name, self.table_inventory['item_name']) == True:
+                                        if item_name == self.table_inventory['item_name'][index] and item_price == str(self.table_inventory['price'][index]) and item_remain == str(self.table_inventory['remain'][index]) and item_total == str(self.table_inventory['total'][index]):
+                                            st.warning("You haven't done the update yet")
+                                            time.sleep(2)
+                                        elif item_name != "" and item_price != "" and item_remain != "" and item_total != "":
                                             isUpdateSuccess = self.mydb.update_item_inventory(item_id, item_name, int(item_price), int(item_total), int(item_remain))
-                                        elif item_name == "":
-                                            st.error("Item name must not be empty!")
-                                        elif check_duplicate_item(item_name, self.table_inventory['item_name']) == False:
-                                            st.error('The item is in stock!')
+                                        elif item_name == "" or item_price == "" or item_total == "" or item_remain == "":
+                                            st.error("Item information must not be empty!")
+                                            
                             if isUpdateSuccess:
                                 st.success("Item information has been updated")
                                 time.sleep(2)
