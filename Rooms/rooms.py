@@ -418,6 +418,7 @@ class Rooms_Module:
         style_metric_cards(border_left_color='#F39D9D')
 
 
+
         table = st.data_editor(room_table, use_container_width=True, hide_index = 1, column_config={"Room ID": None, "is Active": None, "Created at": None, "Max people": None})
 
         # Only one room can be selected
