@@ -64,4 +64,3 @@ def Dashboard(mydb):
     st.divider()
     image_map = Image.open('assets\map.png')
     st.image(image_map)
-

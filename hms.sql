@@ -50,7 +50,7 @@ DROP TABLE IF EXISTS Staff;
 CREATE TABLE `Staff`(
 	staff_id int NOT NULL AUTO_INCREMENT,
     staff_name varchar(45) DEFAULT NULL,
-    phone_number int DEFAULT NULL,
+    phone_number varchar(45) DEFAULT NULL,
     username varchar(100) DEFAULT NULL,
     address varchar(100) DEFAULT NULL,
     date_of_birth date DEFAULT NULL,
