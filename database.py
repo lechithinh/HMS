@@ -114,7 +114,7 @@ class DataBase:
             return True
         except:
             return False
-
+    #CHECK-IN
     def get_room_table(self):
         query = "SELECT * FROM room"
         self.Cursor.execute(query)
@@ -210,7 +210,9 @@ class DataBase:
             return False
     
     def update_inventory(self,product, amount):
-        query = "UPDATE inventory SET remain = remain - %s WHERE item_name = %s"
+        query = """UPDATE inventory 
+                SET remain = remain - %s, modified_at = current_timestamp()
+                WHERE item_name = %s"""
         try: 
             self.Cursor.execute(query, (amount,product))
             self.mydb.commit()
@@ -246,6 +248,22 @@ class DataBase:
         except:
             return False
 
+    def get_inventory_table_in_room(self):
+        query = "SELECT item_name, remain FROM inventory"
+        self.Cursor.execute(query)
+        data = self.Cursor.fetchall()
+    
+        #convert to dictionary
+        inventory_data = {
+            "item name": [],
+            "remain":[]
+            }
+
+        for item in data:
+                inventory_data["item name"].append(item[0])
+                inventory_data["remain"].append(item[1])
+        return inventory_data
+    
     #CHECKOUT
     #Lấy thông tin khách
     def get_guest_table(self):
@@ -288,6 +306,23 @@ class DataBase:
             return data[0]
         except:
             return 0
+        
+    def get_order_of_room(self, booking_id):
+        query = f"SELECT item_name, amount FROM `order` inner join inventory on `order`.item_id = inventory.item_id WHERE booking_id = {booking_id}"
+        self.Cursor.execute(query)
+        data = self.Cursor.fetchall()
+    
+        #convert to dictionary
+        order_data = {
+            "item name": [],
+            "order amount":[]
+            }
+
+        for item in data:
+                order_data["item name"].append(item[0])
+                order_data["order amount"].append(item[1])
+        return order_data
+    
     #Lấy thông tin khách hàng trong một room chỉ định
     def get_guest_of_room(self, id, close='FALSE'):
         query = """select guest.guest_id, guest_name, phone_number, address, date_of_birth, created_at, modified_at
@@ -444,9 +479,10 @@ class DataBase:
         return inventory_data
     
     def add_inventory(self,item_name, amount, price):
-        query = "UPDATE inventory SET total = total + %s , remain = remain + %s , price = %s WHERE item_name = %s"
+        #query = "UPDATE inventory SET total = total + %s , remain = remain + %s , price = %s WHERE item_name = %s"
+        query = "INSERT INTO inventory (item_name, price, total, remain) values (%s,%s,%s,%s)"
         try:
-            self.Cursor.execute(query, (amount,amount,price,item_name))
+            self.Cursor.execute(query, (item_name,price,amount,amount))
             self.mydb.commit()
             return True
         except:
@@ -476,7 +512,10 @@ def main():
     # mydb.Update_One_Staff(4,"nmt",21323,"bh","1999-04-04","nmtt","Staff")
     # print(mydb.get_order_amount(34, "water"))
     # print(mydb.get_booking_id(1))
-    print(mydb.add_a_guest("BINZ",'8888888888',"SONLA","2023-9-6"))
+    # print(mydb.add_a_guest("BINZ",'8888888888',"SONLA","2023-9-6
+    # print(mydb.get_inventory_table_in_room())
+    # print(mydb.get_order_of_room(9))
+    mydb.add_inventory("banana",50,200)
     # print(mydb.g)
 if __name__ == "__main__":
     main()
