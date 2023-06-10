@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 #Helpers
 from global_helpers import DisplayTextCenter
 
-from Rooms.room_supports import guest_validation, room_validation
+from Rooms.room_supports import guest_validation, room_validation, num_guest, get_max_people
 
 
 class Rooms_Module:
@@ -18,10 +18,10 @@ class Rooms_Module:
         with st.form("Room inforamtion"):                                 
             with st.container():
                 st.subheader(
-                    f"ROOM ID: :blue[{table['Room ID'][index]}]")
+                    f"ROOM NAME: :blue[{table['Room Name'][index]}]")
                 row_1_1, row_1_2 = st.columns(2)
                 row_2_1, row_2_2 = st.columns(2)
-                row_3_1, row_3_2 = st.columns(2)
+                row_3_1, _ = st.columns(2)
                 # row_4_1, _ = st.columns(2)
                 with row_1_1:
                     room_name = st.text_input(
@@ -34,14 +34,11 @@ class Rooms_Module:
                     room_type = st.selectbox("Room type",room_type_values, index = room_type_values.index(table["Room type"][index]))
                         
                 with row_2_2:
-                    room_price = st.text_input(
-                        "Price", f"{table['Room price'][index]}")
+                    room_price = st.number_input("Price", min_value=500, step=100, value=table["Room price"][index] )
                 with row_3_1:
-                    room_bed = st.text_input(
-                        "Number of bed", f"{table['Room beds'][index]}")
-                with row_3_2:
-                    max_pp = st.text_input(
-                        "Max people", f"{table['Max people'][index]}")                          
+                    num_bed_values = [1,2]
+                    room_bed = st.selectbox("Number of bed",num_bed_values,num_bed_values.index(table["Room beds"][index]))
+    
                 _, _,col3_button = st.columns(3)
                 
                 with col3_button:   
@@ -50,22 +47,22 @@ class Rooms_Module:
                         with st.spinner('Processing...'):
                             time.sleep(2)
                         #check validation of information 
-                        check_valid_info = True
-                        if room_name == "" or room_price == "" or room_bed == "" or max_pp == "":
-                            st.error("Some information is empty")
-                            check_valid_info = False
+                        list_room_name = table['Room Name']
+                        check_valid_info = room_validation(list_room_name,room_name,floor,room_type,room_price,room_bed)
 
                         if check_valid_info == False:
                             st.error("Please retype the information")
                         else:
                             isUpdate = True
                             #update room
+                            max_pp = get_max_people(room_bed)
                             self.mydb.update_room(room_name,floor,room_type,room_price,room_bed,max_pp,table['Room ID'][index])
 
                 if isUpdate:            
                     update_success_msg = st.success("You have updated the information of the room") 
                     time.sleep(1)
                     update_success_msg.empty()
+                    st.experimental_rerun()
         
     def view_available_room(self, table, index):
         checkin_column, room_infor_column = st.columns(2)
@@ -79,6 +76,7 @@ class Rooms_Module:
                     reservation_3_1, reservation_3_2 = st.columns(2)
                     reservation_4_1, reservation_4_2 = st.columns(2)
                     date_1, date_2 = st.columns(2)
+                    num_guest_1, num_guest_2 = st.columns(2)
 
                     with reservation_1_1:
                         first_guest_name = st.text_input(
@@ -90,8 +88,10 @@ class Rooms_Module:
                         first_guest_address = st.text_input(
                             "Address", placeholder= "Enter address")
                     with reservation_2_2:
+                        #dob có thể chỉnh từ 1/1/1950 -> 1/1/2050
+                        #muốn thay đổi thì chỉnh min và max value
                         first_guest_dob = st.date_input(
-                            "Date of Birth" )
+                            "Date of Birth",min_value=datetime(1950, 1, 1), max_value= datetime(2050,1,1))
 
                     if int(table['Max people'][index]) == 4:
                         with reservation_3_1:
@@ -105,11 +105,11 @@ class Rooms_Module:
                                 "Address", placeholder= "Enter address", key="second guest address")
                         with reservation_4_2:
                             second_guest_dob = st.date_input(
-                                "Date of Birth", key="second guest dob")
+                                "Date of Birth", key="second guest dob",min_value=datetime(1950, 1, 1), max_value= datetime(2050,1,1))
 
                     
                     with date_1:
-                        checkin_date = st.date_input("Check-in date")
+                        checkin_date = st.date_input("Check-in date", max_value=datetime(2050,1,1))
                         checkin_time = st.time_input('Check-in time')
                         checkin_datetime = datetime.combine(checkin_date, checkin_time)
                         
@@ -117,9 +117,20 @@ class Rooms_Module:
                         now = datetime.now()
                         tomorrow =  checkin_date + timedelta(days=1)
                         #checkout date mặc định ngày hôm sau ngày checkin
-                        checkout_date = st.date_input("Check-out date",value= tomorrow, min_value= tomorrow)
+                        checkout_date = st.date_input("Check-out date",value= tomorrow, min_value= tomorrow, max_value=datetime(2050,1,1))
                         checkout_time = st.time_input("Check-out time",datetime(now.year,now.month,now.day,hour=12 ) )
                         checkout_datetime = datetime.combine(checkout_date, checkout_time)
+
+                    #với mỗi phòng có số lượng bed khác nhau sẽ có số lượng max adult, max children khác nhau
+                    # bed = 1: max adult = 2, max child = 1     min adult = 1, min child = 0
+                    # bed = 2: max adult = 4, max child = 2     min adult = 1, min child = 0
+                    
+                    max_adult, max_child = num_guest(table["Room beds"][index])
+                    with num_guest_1:
+                        
+                        num_adult = st.number_input("Num. adult", key="number adult", min_value=1, max_value= max_adult)
+                    with num_guest_2:
+                        num_child = st.number_input("Num. children", key="number children", min_value=0, max_value= max_child)
 
                     #get the current inventory table
                     inventory_table = self.mydb.get_inventory_table_in_room()
@@ -163,7 +174,7 @@ class Rooms_Module:
 
                         
                         # add booking
-                        self.mydb.add_a_booking(table['Room ID'][index], checkin_datetime, checkout_datetime,'FALSE')
+                        self.mydb.add_a_booking(table['Room ID'][index], checkin_datetime, checkout_datetime,num_adult,num_child,'FALSE')
 
                         #get booking id
                         booking_id = self.mydb.get_booking_id(table['Room ID'][index])
@@ -285,7 +296,7 @@ class Rooms_Module:
 
                         #get date, room price, order (item + soluong + giá), total price. 
                         table_bill = self.mydb.finalize_a_bill(booking_id)
-                        total_price = total_price = table_bill['bill_price'][0]
+                        total_price = table_bill['bill_price'][0]
                         #add to bill
                         self.mydb.add_bill(booking_id, table['Room ID'][index], staff_id, total_price)
                         
@@ -406,9 +417,10 @@ class Rooms_Module:
         col3.metric(label="Total Rooms", value=total_rooms)
         style_metric_cards(border_left_color='#F39D9D')
 
-    
-        table = st.data_editor(room_table, use_container_width=True)
-     
+
+
+        table = st.data_editor(room_table, use_container_width=True, hide_index = 1, column_config={"Room ID": None, "is Active": None, "Created at": None, "Max people": None})
+
         # Only one room can be selected
         count = 0
         for row in table['View information']:
@@ -437,7 +449,7 @@ class Rooms_Module:
             with st.container():
                 row_1_1, row_1_2 = st.columns(2)
                 row_2_1, row_2_2 = st.columns(2)
-                row_3_1, row_3_2 = st.columns(2)
+                row_3_1, _ = st.columns(2)
                 with row_1_1:
                     room_name = st.text_input(':blue[**Room Name**]', placeholder='Enter the room name')
                 with row_1_2:
@@ -449,26 +461,28 @@ class Rooms_Module:
                         ':blue[**Select the floor**]',
                         ('1', '2'))
                 with row_2_2:
-                    room_price = st.text_input(':blue[**Room price**]', placeholder='Enter the price')
+                    room_price = st.number_input(':blue[**Room price**]', min_value=500, step=100 )
+                
                 with row_3_1:
-                    beds = st.text_input(':blue[**Room Beds**]', placeholder='Enter number of beds')
-                with row_3_2:
-                    people = st.text_input(':blue[**Max people**]', placeholder='Enter total people')
-                    _, _, _, col_4 = st.columns(4)
-                    with col_4:
-                        Add_room_button = st.form_submit_button("Add a room", type = "primary")
-                        if Add_room_button:
-                            with st.spinner('Processing...'):
-                                time.sleep(2)
-                                
-                            #UPDATED ROOM VALIDATION
-                            check_valid_info = room_validation(list_room_name,room_name, floor, room_type, room_price, beds, people)
+                    beds = st.selectbox(':blue[**Select number of beds**]',
+                        (1, 2))
 
-                            if check_valid_info == False:
-                                st.error("Please retype the information")
-                            else:
-                                isNoti = True
-                                self.mydb.add_a_room(room_name, floor, room_type, room_price, beds, people)
+                _,_,_,col_4 = st.columns(4)
+                with col_4:
+                    Add_room_button = st.form_submit_button("Add a room", type = "primary")
+                    if Add_room_button:
+                        with st.spinner('Processing...'):
+                            time.sleep(2)
+                            
+                        #UPDATED ROOM VALIDATION
+                        check_valid_info = room_validation(list_room_name,room_name, floor, room_type,room_price, beds)
+
+                        if check_valid_info == False:
+                            st.error("Please retype the information")
+                        else:
+                            isNoti = True
+                            max_people = get_max_people(beds)
+                            self.mydb.add_a_room(room_name, floor, room_type, room_price, beds,max_people),
                         
 
         if isNoti:

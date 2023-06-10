@@ -119,34 +119,56 @@ class DataBase:
         query = "SELECT * FROM room"
         self.Cursor.execute(query)
         data = self.Cursor.fetchall()
-    
+
+        query1 = """SELECT room_id, num_adult, num_child
+                    FROM booking 
+                    WHERE isClose = 'FALSE'
+        """
+        self.Cursor.execute(query1)
+        data1 = self.Cursor.fetchall()
+        print(data1)
         #convert to dictionary
         table_data = {
             "View information": [],
             "Room ID": [],
             "Room Name": [],
+            "Num. adult": [],
+            "Num. child": [],
+            # "Num. Guest": [],
             'Floor': [],
             "Room type": [],
             'Room price': [],
             "Room beds": [],
             "Max people": [],
             "Status": [],
-            #"is Active":[],
-            #"Created at":[]
+            "is Active":[],
+            "Created at":[]
             }
 
         for item in data:
-                table_data["View information"].append(False)
-                table_data["Room ID"].append(item[0])
-                table_data["Room Name"].append(item[1])
-                table_data["Floor"].append(item[2])
-                table_data["Room type"].append(str(item[3]))
-                table_data["Room price"].append(item[4])
-                table_data["Room beds"].append(item[5])
-                table_data["Max people"].append(item[6])
-                table_data["Status"].append(item[7])
-                #table_data["is Active"].append(item[8])
-                #table_data["Created at"].append(item[9])
+            table_data["View information"].append(False)
+            table_data["Room ID"].append(item[0])
+            table_data["Room Name"].append(item[1])
+            # table_data["Num. Guest"].append(0)
+            table_data["Floor"].append(item[2])
+            table_data["Room type"].append(str(item[3]))
+            table_data["Room price"].append(item[4])
+            table_data["Room beds"].append(item[5])
+            table_data["Max people"].append(item[6])
+            table_data["Status"].append(item[7])
+            table_data["is Active"].append(item[8])
+            table_data["Created at"].append(item[9])
+
+            isExist = False
+            for temp in data1:
+                if temp[0] == item[0]:
+                    table_data["Num. adult"].append(temp[1])
+                    table_data["Num. child"].append(temp[2])
+                    isExist = True
+            if isExist == False:
+                table_data["Num. adult"].append(0)
+                table_data["Num. child"].append(0)
+        print(table_data)
         return table_data
     
     def add_a_guest(self, first_guest_name,first_guest_phone,first_guest_address,first_guest_dob):
@@ -163,10 +185,10 @@ class DataBase:
         self.Cursor.execute(query)
         self.mydb.commit()
 
-    def add_a_booking(self,room_id, checkin_date, checkout_date, isClose = 'FALSE'):
-        query = "INSERT INTO booking (room_id ,checkin_date, checkout_date,isClose) values (%s,%s,%s,%s)"
+    def add_a_booking(self,room_id, checkin_date, checkout_date, num_adult, num_child, isClose = 'FALSE'):
+        query = "INSERT INTO booking (room_id ,checkin_date, checkout_date,num_adult, num_child, isClose) values (%s,%s,%s,%s,%s,%s)"
         try:
-            self.Cursor.execute(query,(room_id,checkin_date,checkout_date,isClose))
+            self.Cursor.execute(query,(room_id,checkin_date,checkout_date,num_adult, num_child,isClose))
             self.mydb.commit()
             return True
         except:
@@ -238,7 +260,8 @@ class DataBase:
         except:
             return False
         
-    def add_a_room(self, room_name, floor, room_type, room_price, room_beds, max_people):
+    def add_a_room(self, room_name, floor, room_type,room_price, room_beds, max_people):
+    
         query = "INSERT INTO room(room_name, floor, room_type, room_price, room_beds, max_people, status) values (%s, %s, %s, %s, %s, %s, %s)"
         try:
             room_status = 'Available'
@@ -520,7 +543,7 @@ class DataBase:
         except:
             return False
 def main():
-    mydb = DataBase("localhost", "root", "huynhcongthien", "HMS")
+    mydb = DataBase("127.0.0.1", "root", "uynnibeo2104", "hms")
     
     
     
@@ -539,7 +562,10 @@ def main():
     # print(mydb.add_a_guest("BINZ",'8888888888',"SONLA","2023-9-6
     # print(mydb.get_inventory_table_in_room())
     # print(mydb.get_order_of_room(9))
-    mydb.add_inventory("banana",50,200)
+    # mydb.add_inventory("banana",50,200)
+    # mydb.add_a_room("ROOM8",2,"NORMAL",2)
+    # mydb.add_a_booking(2,"2023-01-01","2023-01-01",2,4,"FALSE")
+    mydb.get_room_table()
     # print(mydb.g)
 if __name__ == "__main__":
     main()
