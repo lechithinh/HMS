@@ -7,18 +7,20 @@ from PIL import Image
 
 def Dashboard(mydb):
     card_1, card_2, card_3 = st.columns(3)
-    room_table = mydb.get_room_table()
-    status_count = {'Available':0, 'Occupied':0}
-    total_rooms = len(room_table['Room ID'])
-    for role in room_table['Status']:
-        if role == 'Available':
-            status_count['Available'] +=1
-        else:
-            status_count['Occupied'] +=1
+    # # room_table = mydb.get_room_table()
+    # status_count = {'Available':0, 'Occupied':0}
+    # total_rooms = len(room_table['Room ID'])
+    # for role in room_table['Status']:
+    #     if role == 'Available':
+    #         status_count['Available'] +=1
+    #     else:
+    #         status_count['Occupied'] +=1
     inventory_table = mydb.get_inventory_table()
     item_name = inventory_table['item_name']
-        
-    card_1.metric("Total room ",  total_rooms)
+    data = [1000, 2000, 30000, 4000, 5000, 6000]
+    day = ["Monday", "Tuesday", "Wednesday", "Thursday", "Saturday", "Sunday"]
+
+    card_1.metric("Total room ",  "10")
     card_2.metric("Total Inventory", "9", "-8%")
     card_3.metric("Total Staff", "5", "4%")
 
@@ -26,9 +28,7 @@ def Dashboard(mydb):
     # create two columns for charts
     fig_col1, fig_col2 = st.columns(2)
     with fig_col1:
-        chart_data = pd.DataFrame(
-            [inventory_table['remain']],
-            item_name)
+        chart_data = pd.DataFrame(data, columns=day)
 
         st.line_chart(chart_data)
 
@@ -43,7 +43,7 @@ def Dashboard(mydb):
     with row_1_1:
         image = Image.open('assets/image_1.png')
         st.image(image, width=120)
-        
+
     with row_1_2:
         st.write(":blue[**Hotel information**]")
         st.write(":blue[Hotel Management System]")
@@ -51,8 +51,7 @@ def Dashboard(mydb):
         st.write(":blue[**Contact with**]")
         st.write("📱 :blue[+84-974-02038]")
         st.write("📨 :blue[hotelvipro@gmail.com]")
-        
+
     st.divider()
     image_map = Image.open('assets\map.png')
     st.image(image_map)
-
