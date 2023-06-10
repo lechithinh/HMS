@@ -2,13 +2,14 @@ import streamlit as st
 import streamlit_authenticator as stauth
 from PIL import Image, ImageDraw
 from database import DataBase
-from app import Owner_App, Manager_App, Staff_App
 import time
 import os
-
 import base64
-#Load variables
-from dotenv import load_dotenv #pip install python-dotenv
+from dotenv import load_dotenv
+from global_helpers import LoginPageInfor 
+
+#Load App
+from app import Owner_App, Manager_App, Staff_App
 
 load_dotenv()
 PORT= os.getenv('PORT')
@@ -55,28 +56,23 @@ for user, name, pw in zip(usernames, names, hashed_passwords):
 
 authenticator = stauth.Authenticate(credentials, "HMS", "auth", cookie_expiry_days=0)
 
-#Login Panel
-#set sidebar color
 
-# FFF0F5
 with st.sidebar: 
     _ , col1,_, _, _ = st.columns(5)
 
-    with col1:
-        image = Image.open('assets/image_1.png')
-        st.image(image, width=120)
+    # with col1:
+    #     image = Image.open('assets/image_1.png')
+    #     st.image(image, width=120)
     
     name, authentication_status, username = authenticator.login('Login', 'main')
 
 
 if st.session_state['authentication_status']: #Login successfully
     time.sleep(1)
-    #The app
     staff_id = mydb.get_staff_id(username)
     staff_role = mydb.get_staff_role(staff_id)
     if staff_role == "Owner":
         Owner_App(mydb, staff_id)
-        
     elif staff_role == "Manager":
         Manager_App(mydb, staff_id)
     else:
@@ -92,23 +88,8 @@ if st.session_state['authentication_status']: #Login successfully
         
 
 elif st.session_state['authentication_status'] == False: 
-    #Our demo image
-    st.markdown("""
-    <style>
-        [data-testid=stSidebar] {
-            background-color: 	#ffbd00a2;
-        }
-    </style>
-    """, unsafe_allow_html=True)    
-    set_background('./assets/background/image1.jpg')
     st.sidebar.error('Username/password is incorrect')
+    LoginPageInfor()
 elif st.session_state['authentication_status'] == None:
-    st.markdown("""
-    <style>
-        [data-testid=stSidebar] {
-            background-color: 	#ffbd0095;
-        }
-    </style>
-    """, unsafe_allow_html=True)
-    set_background('./assets/background/image1.jpg')
     st.sidebar.warning('Please enter your username and password')
+    LoginPageInfor()
