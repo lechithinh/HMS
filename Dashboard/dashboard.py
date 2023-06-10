@@ -1,26 +1,35 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-
+from streamlit_extras.metric_cards import style_metric_cards
 from PIL import Image
 
 
 def Dashboard(mydb):
-    card_1, card_2, card_3 = st.columns(3)
+
+    
+    #get room table
     room_table = mydb.get_room_table()
     status_count = {'Available':0, 'Occupied':0}
+    
+    #total rooms
     total_rooms = len(room_table['Room ID'])
-    for role in room_table['Status']:
-        if role == 'Available':
+    for status in room_table['Status']:
+        if status == 'Available':
             status_count['Available'] +=1
         else:
             status_count['Occupied'] +=1
+            
+    #get inventory table
     inventory_table = mydb.get_inventory_table()
     item_name = inventory_table['item_name']
-        
-    card_1.metric("Total room ",  total_rooms)
-    card_2.metric("Total Inventory", "9", "-8%")
-    card_3.metric("Total Staff", "5", "4%")
+    
+    manager_card, staff_card, desk_card = st.columns(3)
+    manager_card.metric(label="Total rooms", value=total_rooms)
+    staff_card.metric(label="Total Inventory", value=5)
+    desk_card.metric(label="Total Staff", value=5)
+    style_metric_cards(border_left_color='#F39D9D')
+ 
 
     st.divider()
     # create two columns for charts

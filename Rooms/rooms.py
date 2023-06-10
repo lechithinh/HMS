@@ -88,10 +88,10 @@ class Rooms_Module:
                         first_guest_address = st.text_input(
                             "Address", placeholder= "Enter address")
                     with reservation_2_2:
-                        #dob có thể chỉnh từ 1/1/1950 -> 1/1/2050
+                        #dob có thể chỉnh từ 1/1/1950 -> 1/1/2050 ==> change to 2004
                         #muốn thay đổi thì chỉnh min và max value
                         first_guest_dob = st.date_input(
-                            "Date of Birth",min_value=datetime(1950, 1, 1), max_value= datetime(2050,1,1))
+                            "Date of Birth",min_value=datetime(1950, 1, 1), max_value= datetime(2050,1,1), value=datetime(2004,1,1))
 
                     if int(table['Max people'][index]) == 4:
                         with reservation_3_1:
@@ -105,7 +105,7 @@ class Rooms_Module:
                                 "Address", placeholder= "Enter address", key="second guest address")
                         with reservation_4_2:
                             second_guest_dob = st.date_input(
-                                "Date of Birth", key="second guest dob",min_value=datetime(1950, 1, 1), max_value= datetime(2050,1,1))
+                                "Date of Birth", key="second guest dob",min_value=datetime(1950, 1, 1), max_value= datetime(2050,1,1), value=datetime(2004,1,1))
 
                     
                     with date_1:
@@ -123,12 +123,12 @@ class Rooms_Module:
 
                     #với mỗi phòng có số lượng bed khác nhau sẽ có số lượng max adult, max children khác nhau
                     # bed = 1: max adult = 2, max child = 1     min adult = 1, min child = 0
-                    # bed = 2: max adult = 4, max child = 2     min adult = 1, min child = 0
+                    # bed = 2: max adult = 4, max child = 2     min adult = 2, min child = 0
                     
-                    max_adult, max_child = num_guest(table["Room beds"][index])
+                    max_adult, max_child, default_value = num_guest(table["Room beds"][index])
+                    
                     with num_guest_1:
-                        
-                        num_adult = st.number_input("Num. adult", key="number adult", min_value=1, max_value= max_adult)
+                        num_adult = st.number_input("Num. adults", key="number adults", min_value=1, max_value= max_adult, value=default_value)
                     with num_guest_2:
                         num_child = st.number_input("Num. children", key="number children", min_value=0, max_value= max_child)
 
@@ -138,7 +138,7 @@ class Rooms_Module:
                     slider_list = [""] * len(inventory_table["item name"])
                     
                     #create slider
-                    with st.expander("Hotel Services", expanded=False):
+                    with st.expander("**:blue[Hotel Services]**", expanded=False):
                         for idx,item_name  in enumerate(inventory_table["item name"]):
                             slider_list[idx] = st.slider(f"Number of {item_name}",0, inventory_table["remain"][idx])
 
@@ -198,7 +198,7 @@ class Rooms_Module:
                         #show sucessfully login message and rerun
                         with st.spinner('Processing...'):
                             time.sleep(4)
-                        checkin_success_msg = st.success("Check-in successfully") 
+                        checkin_success_msg = st.success("The check-in process has been completed successfully") 
                         time.sleep(1)
                         checkin_success_msg.empty()
                         st.experimental_rerun()
@@ -271,7 +271,7 @@ class Rooms_Module:
                         # nếu món item nào có trong inventory mà không có trong order => thì min_vl = 0
                         # nếu món item nào có trong invenotry và có trong order => thì min_vl = số lượng đã order
                     #min_val: order amount of an item   max_val: remaining amount of an item in inventory
-                    with st.expander("Hotel Services", expanded=False):
+                    with st.expander("**:blue[Hotel Services]**", expanded=False):
                         for idx, item_name in enumerate(inventory_table["item name"]):
                             if item_name not in order_table["item name"]:
                                 slider_list[idx] = st.slider(f"Number of {item_name}",0, inventory_table["remain"][idx])
@@ -288,21 +288,11 @@ class Rooms_Module:
                         updated_infor_button = st.form_submit_button("Update infor", type = "primary")
                     
                     if checkout_button:
-                        #update room status after checkout
-                        self.mydb.Update_room_status(table['Room ID'][index])
-
-                        #update booking status --> after checkout, booking status change to 'isClose'
-                        self.mydb.Update_isClose_booking(table['Room ID'][index])
-
-                        #get date, room price, order (item + soluong + giá), total price. 
+                        #total charge = room price + service price
                         table_bill = self.mydb.finalize_a_bill(booking_id)
-                        total_price = table_bill['bill_price'][0]
-                        #add to bill
-                        self.mydb.add_bill(booking_id, table['Room ID'][index], staff_id, total_price)
-                        
-                        with st.expander("Total summary", expanded= True):
-                            st.write(
-                        "------------------------**The Bill**------------------------")
+                       
+                        with st.expander("**:blue[TOTAL SUMMARY]**", expanded= True):
+                            st.divider()
                             col1_1, col1_2 = st.columns(2)
                             col2_1, col2_2 = st.columns(2)
                             col3_1, col3_2 = st.columns(2)
@@ -317,23 +307,23 @@ class Rooms_Module:
                                 st.write(
                                     f"{table_bill['checkin_date'][0]}")
                             with col2_1:
-                                st.write(f"**Checkout date**")
+                                st.write(f"**Checkout Date**")
                             with col2_2:
                                 st.write(
                                     f"{table_bill['checkout_date'][0]}")
                             with col3_1:
-                                st.write(f"**Room type**")
+                                st.write(f"**Room Type**")
                             with col3_2:
                                 st.write(
                                     f"{table_bill['room_type'][0]}")
                             with col4_1:
                                 st.write(
-                                    f"**Room beds**")
+                                    f"**Room Beds**")
                             with col4_2:
                                 st.write(
                                     f"{table_bill['room_beds'][0]}")
                             with col5_1:
-                                st.write("**Room Price**")
+                                st.write("**Room Charge**")
                             with col5_2:
                                 st.write(
                                     f"{table_bill['room_price'][0]}")
@@ -345,18 +335,40 @@ class Rooms_Module:
                                     f"{table_bill['day_remain'][0]}")
 
                             with col7_1:
-                                st.write("**Price Order Water**")
+                                st.write("**Service Charge**")
                             with col7_2:
                                 st.write(
                                     f"{table_bill['total_price'][0]}")
                             st.divider()
                             with col8_1:
-                                st.write("**Total Price**")
+                                st.write("**Total Charge**")
                             with col8_2:
                                 st.write(
                                     f"{table_bill['bill_price'][0]}")
-                        
+                            
+                            checkout_complete = st.form_submit_button("Confirm", type="primary")
+                            #check if checkout process is successful - fix this
+                            if checkout_complete:
+                                #update room status after checkout
+                                isUpdateStatus = self.mydb.Update_room_status(table['Room ID'][index])
+
+                                #update booking status --> after checkout, booking status change to 'isClose'
+                                isUpdateBook = self.mydb.Update_isClose_booking(table['Room ID'][index])
+                                #add to bill database
+                                total_price = table_bill['bill_price'][0]
+                                isAddbill = self.mydb.add_bill(booking_id, table['Room ID'][index], staff_id, total_price)
                                 
+                                if isUpdateStatus and isUpdateBook and isAddbill:
+                                    print("whhyyyyyyyy")
+                                    with st.spinner('Processing...'):
+                                        time.sleep(3)
+                                    checkout_sucess_msg = st.success("The checkout process has been completed successfully")
+                                    time.sleep(1)
+                                    checkout_sucess_msg.empty()
+                                    st.experimental_rerun()
+                                   
+
+                                    
                     if updated_infor_button:
                         with st.spinner('Processing...'):
                             time.sleep(2)
@@ -427,7 +439,7 @@ class Rooms_Module:
             if row == True:
                 count +=1
         if count > 1:
-            st.error("**Only choose 1 room**", icon="🚨")
+            st.error("**Please select a single record.!**", icon="🚨")
         else:
             for value in table['View information']:
                 if value:
@@ -467,22 +479,20 @@ class Rooms_Module:
                     beds = st.selectbox(':blue[**Select number of beds**]',
                         (1, 2))
 
-                _,_,_,col_4 = st.columns(4)
-                with col_4:
-                    Add_room_button = st.form_submit_button("Add a room", type = "primary")
-                    if Add_room_button:
-                        with st.spinner('Processing...'):
-                            time.sleep(2)
-                            
-                        #UPDATED ROOM VALIDATION
-                        check_valid_info = room_validation(list_room_name,room_name, floor, room_type,room_price, beds)
+                Add_room_button = st.form_submit_button("Add a room", type = "primary")
+                if Add_room_button:
+                    with st.spinner('Processing...'):
+                        time.sleep(2)
+                        
+                    #UPDATED ROOM VALIDATION
+                    check_valid_info = room_validation(list_room_name,room_name, floor, room_type,room_price, beds)
 
-                        if check_valid_info == False:
-                            st.error("Please retype the information")
-                        else:
-                            isNoti = True
-                            max_people = get_max_people(beds)
-                            self.mydb.add_a_room(room_name, floor, room_type, room_price, beds,max_people),
+                    if check_valid_info == False:
+                        st.error("Please retype the information")
+                    else:
+                        isNoti = True
+                        max_people = get_max_people(beds)
+                        self.mydb.add_a_room(room_name, floor, room_type, room_price, beds,max_people),
                         
 
         if isNoti:

@@ -35,16 +35,15 @@ class Staff_Module:
         style_metric_cards(border_left_color='#F39D9D')
 
         # Show the table data
-        # staff_new = display_table_staff(staff_data)
         table_staff = st.data_editor(staff_data, use_container_width=True)
-        # table_new = st.experimental_data_editor(staff_new, use_container_width=True)
+
 
         count = 0
         for value in table_staff['Update']:
             if value:
                 count += 1
         if count > 1:
-            st.error("**Only choose one item!**", icon="🚨")
+            st.error("**Please select a single record.!**", icon="🚨")
         else:
             for value in table_staff['Update']:
                 if value:
