@@ -40,6 +40,7 @@ CREATE TABLE `Inventory`(
     remain int DEFAULT NULL,
     created_at datetime default current_timestamp(),
     isActive varchar(45) DEFAULT 'TRUE',
+    updated_at datetime default current_timestamp(),
     primary key(item_id)
 )engine=InnoDB auto_increment=1 DEFAULT CHARSET=utf8mb4 collate=utf8mb4_0900_ai_ci;
 
