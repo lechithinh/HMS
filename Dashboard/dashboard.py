@@ -7,17 +7,28 @@ from PIL import Image
 
 def Dashboard(mydb):
     card_1, card_2, card_3 = st.columns(3)
-    card_1.metric("Rooms Occupied ", "30", "-10%")
-    card_2.metric("Expected Arrivals", "9", "-8%")
-    card_3.metric("Expected Departure", "5", "4%")
+    room_table = mydb.get_room_table()
+    status_count = {'Available':0, 'Occupied':0}
+    total_rooms = len(room_table['Room ID'])
+    for role in room_table['Status']:
+        if role == 'Available':
+            status_count['Available'] +=1
+        else:
+            status_count['Occupied'] +=1
+    inventory_table = mydb.get_inventory_table()
+    item_name = inventory_table['item_name']
+        
+    card_1.metric("Total room ",  total_rooms)
+    card_2.metric("Total Inventory", "9", "-8%")
+    card_3.metric("Total Staff", "5", "4%")
 
     st.divider()
     # create two columns for charts
     fig_col1, fig_col2 = st.columns(2)
     with fig_col1:
         chart_data = pd.DataFrame(
-            np.random.randn(20, 3),
-            columns=['a', 'b', 'c'])
+            [inventory_table['remain']],
+            item_name)
 
         st.line_chart(chart_data)
 
@@ -42,4 +53,6 @@ def Dashboard(mydb):
         st.write("📨 :blue[hotelvipro@gmail.com]")
         
     st.divider()
+    image_map = Image.open('assets\map.png')
+    st.image(image_map)
 

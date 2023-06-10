@@ -249,7 +249,7 @@ class DataBase:
             return False
 
     def get_inventory_table_in_room(self):
-        query = "SELECT item_name, remain FROM inventory"
+        query = "SELECT item_name, remain FROM inventory where isActive = 'TRUE'"
         self.Cursor.execute(query)
         data = self.Cursor.fetchall()
     
@@ -453,7 +453,7 @@ class DataBase:
 
     #inventory
     def get_inventory_table(self):
-        query = "SELECT * FROM inventory"
+        query = "SELECT * FROM inventory where isActive = 'TRUE'"
         self.Cursor.execute(query)
         data = self.Cursor.fetchall()
     
@@ -465,7 +465,7 @@ class DataBase:
             'price': [],
             'total': [],
             'remain': [],
-            "created_at": []
+            "updated_at": []
             }
 
         for item in data:
@@ -475,14 +475,21 @@ class DataBase:
                 inventory_data["price"].append(item[2])
                 inventory_data["total"].append(str(item[3]))
                 inventory_data["remain"].append(item[4])
-                inventory_data["created_at"].append(item[5])
+                inventory_data["updated_at"].append(item[5])
         return inventory_data
     
     def add_inventory(self,item_name, amount, price):
         #query = "UPDATE inventory SET total = total + %s , remain = remain + %s , price = %s WHERE item_name = %s"
-        query = "INSERT INTO inventory (item_name, price, total, remain) values (%s,%s,%s,%s)"
+        query = """INSERT INTO `inventory`(item_name, price , total, remain)
+                    VALUES (%s,%s, %s, %s)
+                    ON DUPLICATE KEY UPDATE
+                    price = %s,
+                    total = %s,
+                    remain = %s,
+                    created_at = current_timestamp(),
+                    isActive = 'TRUE'"""
         try:
-            self.Cursor.execute(query, (item_name,price,amount,amount))
+            self.Cursor.execute(query, (item_name,price,amount,amount, price, amount, amount))
             self.mydb.commit()
             return True
         except:
@@ -494,7 +501,24 @@ class DataBase:
         self.Cursor.execute(query)
         data = self.Cursor.fetchone()
         return data[0]
-
+    def update_item_inventory(self, item_id, item_name, item_price, total, remain):
+        query = """update inventory
+                   set item_name = %s, price = %s, total = %s, remain = %s, created_at = current_timestamp()
+                   where item_id = %s"""
+        try:
+            self.Cursor.execute(query, (item_name, item_price, total, remain, item_id))
+            self.mydb.commit()
+            return True
+        except:
+            return False
+    def remove_item(self, item_id):
+        query = f"UPDATE inventory SET isActive = 'FALSE' WHERE item_id = {item_id}"
+        try:
+            self.Cursor.execute(query)
+            self.mydb.commit()
+            return True
+        except:
+            return False
 def main():
     mydb = DataBase("localhost", "root", "huynhcongthien", "HMS")
     

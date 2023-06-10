@@ -407,7 +407,7 @@ class Rooms_Module:
         style_metric_cards(border_left_color='#F39D9D')
 
     
-        table = st.experimental_data_editor(room_table, use_container_width=True)
+        table = st.data_editor(room_table, use_container_width=True)
      
         # Only one room can be selected
         count = 0

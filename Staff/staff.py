@@ -36,91 +36,98 @@ class Staff_Module:
 
         # Show the table data
         # staff_new = display_table_staff(staff_data)
-        table_staff = st.experimental_data_editor(staff_data, use_container_width=True)
+        table_staff = st.data_editor(staff_data, use_container_width=True)
         # table_new = st.experimental_data_editor(staff_new, use_container_width=True)
 
+        count = 0
         for value in table_staff['Update']:
             if value:
-                index = table_staff['Update'].index(value)
-                staff_id = table_staff['Staff ID'][index]
-                username = table_staff['Username'][index]
-                # Show an expander for the selected room
-                with st.expander("", expanded=True):
-                    column_card, column_infor = st.columns(2)
-                    # card for the selected room
-                    with column_card:
-                        with open(f"assets/staff/username_.png", "rb") as f:
-                            data = f.read()
-                            encoded = base64.b64encode(data)
-                        data = "data:image/png;base64," + \
-                            encoded.decode("utf-8")
+                count += 1
+        if count > 1:
+            st.error("**Only choose one item!**", icon="🚨")
+        else:
+            for value in table_staff['Update']:
+                if value:
+                    index = table_staff['Update'].index(value)
+                    staff_id = table_staff['Staff ID'][index]
+                    username = table_staff['Username'][index]
+                    # Show an expander for the selected room
+                    with st.expander("", expanded=True):
+                        column_card, column_infor = st.columns(2)
+                        # card for the selected room
+                        with column_card:
+                            with open(f"assets/staff/username_.png", "rb") as f:
+                                data = f.read()
+                                encoded = base64.b64encode(data)
+                            data = "data:image/png;base64," + \
+                                encoded.decode("utf-8")
 
-                        card(
-                            title=table_staff['Name'][index],
-                            text=table_staff['Role'][index],
-                            image=data,
-                            url="https://github.com/gamcoh/st-card")
+                            card(
+                                title=table_staff['Name'][index],
+                                text=table_staff['Role'][index],
+                                image=data,
+                                url="https://github.com/gamcoh/st-card")
 
-                    # information for the selected room
-                    with column_infor:
+                        # information for the selected room
+                        with column_infor:
 
-                        st.subheader(
-                            f":blue[**STAFF ID**]: :blue[{table_staff['Staff ID'][index]}]")
+                            st.subheader(
+                                f":blue[**STAFF ID**]: :blue[{table_staff['Staff ID'][index]}]")
 
-                        with st.form("Update Staff Information"):
-                            isUpdateSucess = False
-                            isRemove = False
+                            with st.form("Update Staff Information"):
+                                isUpdateSucess = False
+                                isRemove = False
 
-                            with st.container():
-                                row_1_1, row_1_2 = st.columns(2)
-                                row_2_1, row_2_2 = st.columns(2)
-                                row_3_1, row_3_2 = st.columns(2)
-                                with row_1_1:
-                                    staff_name = st.text_input(
-                                        ":blue[**Full Name**]", f"{table_staff['Name'][index]}")
-                                with row_1_2:
-                                    staff_phone = st.text_input(
-                                        ':blue[**Phone Number**]', f"{table_staff['Phone'][index]}")
-                                with row_2_1:
-                                    staff_address = st.text_input(
-                                        ":blue[**Address**]", f"{table_staff['Address'][index]}")
-                                with row_2_2:
-                                    staff_role = st.selectbox(
-                                        ":blue[**Role**]", ("Manager", "Staff", "FrontDesk"))
-                                with row_3_1:
-                                    date_obj = table_staff['Date Of Birth'][index]
-                                    year = date_obj.year
-                                    month = date_obj.month
-                                    day = date_obj.day
+                                with st.container():
+                                    row_1_1, row_1_2 = st.columns(2)
+                                    row_2_1, row_2_2 = st.columns(2)
+                                    row_3_1, row_3_2 = st.columns(2)
+                                    with row_1_1:
+                                        staff_name = st.text_input(
+                                            ":blue[**Full Name**]", f"{table_staff['Name'][index]}")
+                                    with row_1_2:
+                                        staff_phone = st.text_input(
+                                            ':blue[**Phone Number**]', f"{table_staff['Phone'][index]}")
+                                    with row_2_1:
+                                        staff_address = st.text_input(
+                                            ":blue[**Address**]", f"{table_staff['Address'][index]}")
+                                    with row_2_2:
+                                        staff_role = st.selectbox(
+                                            ":blue[**Role**]", ("Manager", "Staff", "FrontDesk"))
+                                    with row_3_1:
+                                        date_obj = table_staff['Date Of Birth'][index]
+                                        year = date_obj.year
+                                        month = date_obj.month
+                                        day = date_obj.day
 
-                                    Date_of_birth = st.date_input(
-                                        ":blue[**Date Of Birth**]", datetime.date(year, month, day))
-                                with row_3_2:
-                                    staff_username = st.text_input(
-                                        ":blue[**Username**]", f"{table_staff['Username'][index]}", disabled=True)
+                                        Date_of_birth = st.date_input(
+                                            ":blue[**Date Of Birth**]", datetime.date(year, month, day))
+                                    with row_3_2:
+                                        staff_username = st.text_input(
+                                            ":blue[**Username**]", f"{table_staff['Username'][index]}", disabled=True)
 
-                                col1_remove_staff, _, col3_update_staff = st.columns(3)
-                                with col1_remove_staff:
-                                    remove_button = st.form_submit_button(":blue[**Remove**]")
-                                    if remove_button:
-                                        isRemove = True
-                                        self.mydb.Hide_staff(staff_id)
-                                    # Remove the user
-                                with col3_update_staff:
-                                    updated_button = st.form_submit_button(
-                                        "Update Staff Info", type="primary")
-                                    if updated_button:
-                                        isUpdateSucess = self.mydb.Update_One_Staff(
-                                            staff_name, staff_phone, staff_address, Date_of_birth, staff_username, staff_role, staff_id,
-                                        )
+                                    col1_remove_staff, _, col3_update_staff = st.columns(3)
+                                    with col1_remove_staff:
+                                        remove_button = st.form_submit_button(":blue[**Remove**]")
+                                        if remove_button:
+                                            isRemove = True
+                                            self.mydb.Hide_staff(staff_id)
+                                        # Remove the user
+                                    with col3_update_staff:
+                                        updated_button = st.form_submit_button(
+                                            "Update Staff Info", type="primary")
+                                        if updated_button:
+                                            isUpdateSucess = self.mydb.Update_One_Staff(
+                                                staff_name, staff_phone, staff_address, Date_of_birth, staff_username, staff_role, staff_id,
+                                            )
 
-                            if isUpdateSucess:
-                                st.success(
-                                    "Staff information has been updated")
-                            if isRemove:
-                                st.success("Remove staff successful")
-                                time.sleep(1)
-                                st.experimental_rerun()
+                                if isUpdateSucess:
+                                    st.success(
+                                        "Staff information has been updated")
+                                if isRemove:
+                                    st.success("Remove staff successful")
+                                    time.sleep(1)
+                                    st.experimental_rerun()
 
     def Add_a_staff(self):
         Add_staff_message = False
@@ -159,25 +166,24 @@ class Staff_Module:
                     salary = st.number_input(
                         ':blue[**Salary**]', 5000000
                     )
-                    _, _, col3_button = st.columns(3)
-                    with col3_button:
-                        add_button = st.form_submit_button(
-                            "Create the staff info", type="primary")
-                        if add_button:
-                            with st.spinner('Processing...'):
-                                time.sleep(2)
-                            if len(Name) == 0 or len(Phone) == 0 or len(username) == 0 or len(password) == 0 or len(Address) ==0:
-                                st.error("Must enter full information!")
-                            else:
-                                if check_valid_phone(Phone) and check_user_name(username, staff_data['Username']) and check_name_staff(Name):
-                                    Add_staff_message = self.mydb.Add_New_Staff(
+                _, _, col3_button = st.columns(3)
+                with col3_button:
+                    add_button = st.form_submit_button("Create the staff info", type="primary")
+                    if add_button:
+                        with st.spinner('Processing...'):
+                            time.sleep(2)
+                        if len(Name) == 0 or len(Phone) == 0 or len(username) == 0 or len(password) == 0 or len(Address) ==0:
+                            st.error("Must enter full information!")
+                        else:
+                            if check_valid_phone(Phone) and check_user_name(username, staff_data['Username']) and check_name_staff(Name):
+                                Add_staff_message = self.mydb.Add_New_Staff(
                                         Name, Phone, username, hashed_password[0], Date_of_birth, Role, Address)
-                                elif check_valid_phone(Phone) == False:
-                                    st.error("Phone number unvalid")
-                                elif  check_user_name(username, staff_data['Username']) == False:
-                                    st.error("This account already exists! Please choose another account")
-                                elif check_name_staff(Name) == False:
-                                    st.error("Staff name must be alphabet")
+                            elif check_valid_phone(Phone) == False:
+                                st.error("Phone number unvalid")
+                            elif  check_user_name(username, staff_data['Username']) == False:
+                                st.error("This account already exists! Please choose another account")
+                            elif check_name_staff(Name) == False:
+                                st.error("Staff name must be alphabet")
                                 
                                 
 
