@@ -150,13 +150,16 @@ class Rooms_Module:
                         time.sleep(2)
 
                     # kiểm tra thông tin check-in
-                    check_valid_info = guest_validation(first_guest_name,first_guest_phone,first_guest_address,first_guest_dob,"first")
+                    check_valid_info_1 = True
+                    check_valid_info_2 = True
+
+                    check_valid_info_1 = guest_validation(first_guest_name,first_guest_phone,first_guest_address,first_guest_dob,"first")
 
                     if table['Room beds'][index] == 2:
-                        check_valid_info = guest_validation(second_guest_name,second_guest_phone,second_guest_address,second_guest_dob,"second")
+                        check_valid_info_2 = guest_validation(second_guest_name,second_guest_phone,second_guest_address,second_guest_dob,"second")
 
                     
-                    if check_valid_info == False:
+                    if check_valid_info_1 == False or check_valid_info_2 == False:
                         st.error("Please retype the information!")
                     else:
                         #update to guest infor to data
@@ -345,10 +348,10 @@ class Rooms_Module:
                                     f"{table_bill['day_remain'][0]}")
 
                             with col7_1:
-                                st.write("**Price Order Water**")
+                                st.write("**Order Price**")
                             with col7_2:
                                 st.write(
-                                    f"{table_bill['total_price'][0]}")
+                                    f"{table_bill['order_price'][0]}")
                             st.divider()
                             with col8_1:
                                 st.write("**Total Price**")
@@ -360,13 +363,15 @@ class Rooms_Module:
                     if updated_infor_button:
                         with st.spinner('Processing...'):
                             time.sleep(2)
+                        check_valid_info_1 = True
+                        check_valid_info_2 = True
 
-                        check_valid_info = guest_validation(first_guest_name,first_guest_phone,first_guest_address,first_guest_dob,"first")
+                        check_valid_info_1 = guest_validation(first_guest_name,first_guest_phone,first_guest_address,first_guest_dob,"first")
 
                         if table['Room beds'][index] == 2:
-                            check_valid_info = guest_validation(second_guest_name,second_guest_phone,second_guest_address,second_guest_dob,"second")
+                            check_valid_info_2 = guest_validation(second_guest_name,second_guest_phone,second_guest_address,second_guest_dob,"second")
 
-                        if check_valid_info == False:
+                        if check_valid_info_1 == False or check_valid_info_2 == False:
                             st.error("Please retype the information!")
                         else:
                             if int(table['Max people'][index]) == 4:
