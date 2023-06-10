@@ -127,8 +127,9 @@ class Rooms_Module:
                     slider_list = [""] * len(inventory_table["item name"])
                     
                     #create slider
-                    for idx,item_name  in enumerate(inventory_table["item name"]):
-                        slider_list[idx] = st.slider(f"Number of {item_name}",0, inventory_table["remain"][idx])
+                    with st.expander("Hotel Services", expanded=False):
+                        for idx,item_name  in enumerate(inventory_table["item name"]):
+                            slider_list[idx] = st.slider(f"Number of {item_name}",0, inventory_table["remain"][idx])
 
 
                 checkin_button = st.form_submit_button("Checkin", type = "primary")
@@ -259,11 +260,12 @@ class Rooms_Module:
                         # nếu món item nào có trong inventory mà không có trong order => thì min_vl = 0
                         # nếu món item nào có trong invenotry và có trong order => thì min_vl = số lượng đã order
                     #min_val: order amount of an item   max_val: remaining amount of an item in inventory
-                    for idx, item_name in enumerate(inventory_table["item name"]):
-                        if item_name not in order_table["item name"]:
-                            slider_list[idx] = st.slider(f"Number of {item_name}",0, inventory_table["remain"][idx])
-                        else:
-                            slider_list[idx] = st.slider(f"Number of {item_name}", order_table["order amount"][order_table["item name"].index(item_name)], inventory_table["remain"][idx])
+                    with st.expander("Hotel Services", expanded=False):
+                        for idx, item_name in enumerate(inventory_table["item name"]):
+                            if item_name not in order_table["item name"]:
+                                slider_list[idx] = st.slider(f"Number of {item_name}",0, inventory_table["remain"][idx])
+                            else:
+                                slider_list[idx] = st.slider(f"Number of {item_name}", order_table["order amount"][order_table["item name"].index(item_name)], inventory_table["remain"][idx])
             
                 
                     
