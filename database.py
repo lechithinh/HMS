@@ -126,7 +126,7 @@ class DataBase:
         """
         self.Cursor.execute(query1)
         data1 = self.Cursor.fetchall()
-        print(data1)
+        
         #convert to dictionary
         table_data = {
             "View information": [],
@@ -402,40 +402,66 @@ class DataBase:
         except:
             return False
     def finalize_a_bill(self, booking_id):
-        query = """SELECT checkin_date, checkout_date, room_type, room_beds, room_price, total_price, TIMESTAMPDIFF(Day,checkin_date,checkout_date) as remainday,  TIMESTAMPDIFF(Day,checkin_date,checkout_date) * room_price + total_price as bill_price
-                FROM (SELECT booking_id, room.room_id, checkin_date, checkout_date, room_type, room_beds, room_price
-	            FROM booking inner join room
-	            on booking.room_id = room.room_id
-	            WHERE booking_id = %s) as table1
-                inner join 
-	            (SELECT booking_id, sum(total_price) as total_price
-                FROM `order`
-                WHERE booking_id = %s ) as table2
-                ON table1.booking_id = table2.booking_id;"""
-        self.Cursor.execute(query, (booking_id, booking_id))
-        data = self.Cursor.fetchall()
+        # query = """SELECT checkin_date, checkout_date, room_type, room_beds, room_price, total_price, TIMESTAMPDIFF(Day,checkin_date,checkout_date) as remainday,  TIMESTAMPDIFF(Day,checkin_date,checkout_date) * room_price + total_price as bill_price
+        #         FROM (SELECT booking_id, room.room_id, checkin_date, checkout_date, room_type, room_beds, room_price
+	    #         FROM booking inner join room
+	    #         on booking.room_id = room.room_id
+	    #         WHERE booking_id = %s) as table1
+        #         inner join 
+	    #         (SELECT booking_id, sum(total_price) as total_price
+        #         FROM `order`
+        #         WHERE booking_id = %s ) as table2
+        #         ON table1.booking_id = table2.booking_id;"""        
+        query1 = f"""SELECT sum(total_price) as order_price
+                    FROM `order`
+                    WHERE booking_id = {booking_id}
+        """
+        
+        query2 = f"""SELECT TIMESTAMPDIFF(Day,checkin_date,checkout_date) * room_price as room_price
+                    FROM booking inner join room
+                    ON booking.room_id = room.room_id
+                    WHERE booking_id = {booking_id}
+        """
+        query3 =  f"SELECT checkin_date, checkout_date, room_type, room_beds,TIMESTAMPDIFF(Day,checkin_date,checkout_date)  FROM booking inner join room on booking.room_id = room.room_id WHERE booking_id = {booking_id}"
 
-        # return data
+        self.Cursor.execute(query1)
+        order_price = self.Cursor.fetchone()
+        self.Cursor.execute(query2)
+        room_price = self.Cursor.fetchone()
+        
+
+        self.Cursor.execute(query3)
+        data3 = self.Cursor.fetchone()
+
+
+        if order_price[0] == None:
+            temp = 0
+        else:
+            temp = order_price[0]
+        total_price = temp + room_price[0]
         table_bill = {
             "checkin_date": [],
             "checkout_date": [],
             "room_type": [],
             "room_beds": [],
             "room_price": [],
-            "total_price": [],
+            "order_price": [],
             "day_remain": [],
             "bill_price": []
         }
-        for item in data:
-            table_bill["checkin_date"].append(item[0])
-            table_bill["checkout_date"].append(item[1])
-            table_bill["room_type"].append(item[2])
-            table_bill["room_beds"].append(item[3])
-            table_bill["room_price"].append(item[4])
-            table_bill["total_price"].append(item[5])
-            table_bill["day_remain"].append(item[6])
-            table_bill["bill_price"].append(item[7])
+
+        table_bill["checkin_date"].append(data3[0])
+        table_bill["checkout_date"].append(data3[1])
+        table_bill["room_type"].append(data3[2])
+        table_bill["room_beds"].append(data3[3])
+        table_bill["room_price"].append(room_price[0])
+        table_bill["order_price"].append(temp)
+        table_bill["day_remain"].append(data3[4])
+        table_bill["bill_price"].append(total_price)
         return table_bill
+    
+    
+
     def update_guest_info(self, guest_id,  guest_name, phone, address, dob):
         query = f"UPDATE guest SET guest_name = '{guest_name}', phone_number = {phone}, address = '{address}', date_of_birth='{dob}'WHERE guest_id = {guest_id}"
         try:
@@ -498,7 +524,7 @@ class DataBase:
                 inventory_data["price"].append(item[2])
                 inventory_data["total"].append(str(item[3]))
                 inventory_data["remain"].append(item[4])
-                inventory_data["updated_at"].append(item[5])
+                inventory_data["updated_at"].append(item[7])
         return inventory_data
     
     def add_inventory(self,item_name, amount, price):
@@ -510,6 +536,7 @@ class DataBase:
                     total = %s,
                     remain = %s,
                     created_at = current_timestamp(),
+                    updated_at = current_timestamp(),
                     isActive = 'TRUE'"""
         try:
             self.Cursor.execute(query, (item_name,price,amount,amount, price, amount, amount))
@@ -565,7 +592,9 @@ def main():
     # mydb.add_inventory("banana",50,200)
     # mydb.add_a_room("ROOM8",2,"NORMAL",2)
     # mydb.add_a_booking(2,"2023-01-01","2023-01-01",2,4,"FALSE")
-    mydb.get_room_table()
+    # mydb.get_room_table()
+    # print(mydb.get_inventory_table())
+    mydb.finalize_a_bill(11)
     # print(mydb.g)
 if __name__ == "__main__":
     main()
