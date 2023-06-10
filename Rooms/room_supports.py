@@ -36,15 +36,29 @@ def guest_validation(guest_name, guest_phone, guest_address, guest_dob, stt_gues
         
 # guest_validation("le chi thinh beo","222f2222222","asdasf","asdfa","first")
 
-def room_validation(list_of_room, room_name, floor, room_type, room_price, beds, people):
+def room_validation(list_of_room, room_name, floor, room_type,room_price, beds ):
     isValid = True
-
-    # if room_name not in list_of_room or room_name == "":
+    # room_name = room_name.casefold()
+    # room_name = room_name.capitalize()
+    # if room_name in list_of_room or room_name == "":
     #     isValid = False
     #     st.error("Check **room name** again!")
 
-    # if floor == "" or room_type == "" or room_price == "" or beds == "" or people == "":
+    # if floor == "" or room_type == "" or room_price == "" or beds == "":
     #     isValid = False
     #     st.error("Check other again")
     
     return isValid
+
+def num_guest(num_bed):
+    if num_bed == 1:
+        return [2,1] 
+    else:
+        return [4,2] #[num_adult, num_child]
+
+def get_max_people(num_bed):
+    max_pp = {
+            1: 2,
+            2: 4
+        }
+    return max_pp[num_bed]
