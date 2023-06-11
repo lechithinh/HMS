@@ -110,16 +110,14 @@ class Rooms_Module:
                             second_guest_dob = st.date_input(
                                 "Date of Birth", key="second guest dob",min_value=datetime(1950, 1, 1), max_value= datetime(2050,1,1), value=datetime(2004,1,1))
 
-                    
+                    now = datetime.now()
                     with date_1:
-
                         checkin_date = st.date_input("Check-in date", max_value=datetime.now(), min_value=datetime.now())
 
-                        checkin_time = st.time_input('Check-in time')
+                        checkin_time = st.time_input('Check-in time', value=datetime(now.year,now.month,now.day,hour=12))
                         checkin_datetime = datetime.combine(checkin_date, checkin_time)
                         
                     with date_2:
-                        now = datetime.now()
                         tomorrow =  now + timedelta(days=1)
                         #checkout date mặc định ngày hôm sau ngày checkin
                         checkout_date = st.date_input("Check-out date",value= tomorrow, min_value= tomorrow, max_value=datetime(2050,1,1))
@@ -407,7 +405,12 @@ class Rooms_Module:
                             for idx,item_slider in enumerate(slider_list):
                                 if item_slider > 0:
                                     self.mydb.update_order(booking_id, inventory_table['item name'][idx],item_slider)
-                                    self.mydb.update_inventory(inventory_table['item name'][idx],item_slider - order_table['order amount'][order_table['item name'].index( inventory_table['item name'][idx])])
+                                    if inventory_table['item name'][idx] not in order_table['item name']:
+                                        self.mydb.update_inventory(inventory_table['item name'][idx],item_slider)
+                                    else:
+                                        self.mydb.update_inventory(inventory_table['item name'][idx],item_slider - order_table['order amount'][order_table['item name'].index( inventory_table['item name'][idx])])
+                                    
+                            
                     
                             with st.spinner('Processing...'):
                                 time.sleep(2)
