@@ -109,13 +109,15 @@ class Rooms_Module:
 
                     
                     with date_1:
+
                         checkin_date = st.date_input("Check-in date", max_value=datetime.now(), min_value=datetime.now())
+
                         checkin_time = st.time_input('Check-in time')
                         checkin_datetime = datetime.combine(checkin_date, checkin_time)
                         
                     with date_2:
                         now = datetime.now()
-                        tomorrow =  checkin_date + timedelta(days=1)
+                        tomorrow =  now + timedelta(days=1)
                         #checkout date mặc định ngày hôm sau ngày checkin
                         checkout_date = st.date_input("Check-out date",value= tomorrow, min_value= tomorrow, max_value=datetime(2050,1,1))
                         checkout_time = st.time_input("Check-out time",datetime(now.year,now.month,now.day,hour=12 ) )
