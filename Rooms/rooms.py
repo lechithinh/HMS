@@ -109,7 +109,7 @@ class Rooms_Module:
 
                     
                     with date_1:
-                        checkin_date = st.date_input("Check-in date", max_value=datetime(2050,1,1))
+                        checkin_date = st.date_input("Check-in date", max_value=datetime.now(), min_value=datetime.now())
                         checkin_time = st.time_input('Check-in time')
                         checkin_datetime = datetime.combine(checkin_date, checkin_time)
                         
@@ -293,6 +293,14 @@ class Rooms_Module:
                     if checkout_button:
                         #total charge = room price + service price
                         table_bill = self.mydb.finalize_a_bill(booking_id)
+                        
+                        isUpdateStatus = self.mydb.Update_room_status(table['Room ID'][index])
+
+                        #update booking status --> after checkout, booking status change to 'isClose'
+                        isUpdateBook = self.mydb.Update_isClose_booking(table['Room ID'][index])
+                            #add to bill database
+                        total_price = table_bill['bill_price'][0]
+                        isAddbill = self.mydb.add_bill(booking_id, table['Room ID'][index], staff_id, total_price)
                        
                         with st.expander("**:blue[TOTAL SUMMARY]**", expanded= True):
                             st.divider()
@@ -329,47 +337,36 @@ class Rooms_Module:
                                 st.write("**Room Charge**")
                             with col5_2:
                                 st.write(
-                                    f"{table_bill['room_price'][0]}")
+                                    f"**:red[{table_bill['room_price'][0]}]** VND")
                             with col6_1:
                                 st.write(
-                                    f"**Day Remain**")
+                                    f"**Staying**")
                             with col6_2:
                                 st.write(
-                                    f"{table_bill['day_remain'][0]}")
+                                    f"{table_bill['day_remain'][0]} Days")
 
                             with col7_1:
                                 st.write("**Service Charge**")
                             with col7_2:
                                 st.write(
-                                    f"{table_bill['order_price'][0]}")
+                                    
+                                    f"**:red[{table_bill['order_price'][0]}]** VND")
                             st.divider()
                             with col8_1:
                                 st.write("**Total Charge**")
                             with col8_2:
                                 st.write(
-                                    f"{table_bill['bill_price'][0]}")
+                                    f"**:red[{table_bill['bill_price'][0]}]** VND")
                             
-                            checkout_complete = st.form_submit_button("Confirm", type="primary")
-                            #check if checkout process is successful - fix this
-                            if checkout_complete:
-                                #update room status after checkout
-                                isUpdateStatus = self.mydb.Update_room_status(table['Room ID'][index])
-
-                                #update booking status --> after checkout, booking status change to 'isClose'
-                                isUpdateBook = self.mydb.Update_isClose_booking(table['Room ID'][index])
-                                #add to bill database
-                                total_price = table_bill['bill_price'][0]
-                                isAddbill = self.mydb.add_bill(booking_id, table['Room ID'][index], staff_id, total_price)
+                            if isUpdateStatus and isUpdateBook and isAddbill:
+                                with st.spinner('Processing...'):
+                                    time.sleep(3)
+                                checkout_sucess_msg = st.success("The checkout process has been completed successfully")
+                                time.sleep(3)
+                                checkout_sucess_msg.empty()
                                 
-                                if isUpdateStatus and isUpdateBook and isAddbill:
-                                    print("whhyyyyyyyy")
-                                    with st.spinner('Processing...'):
-                                        time.sleep(3)
-                                    checkout_sucess_msg = st.success("The checkout process has been completed successfully")
-                                    time.sleep(1)
-                                    checkout_sucess_msg.empty()
-                                    st.experimental_rerun()
-                                   
+                            
+                                
 
                                     
                     if updated_infor_button:

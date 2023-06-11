@@ -45,7 +45,7 @@ def check_name_staff(username):
        else:
               return False
 def check_password(password):
-       if len(password) < 10:
+       if len(password) < 8:
               return False
        else:
               #check (?=.*\d) at least  number, (?=.*[a-zA-Z]) at least character, (?=.*[\W_]) at least special character

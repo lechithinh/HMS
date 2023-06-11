@@ -15,7 +15,7 @@ class Inventory_Module:
             if value:
                 count += 1
         if count > 1:
-            st.error("**Please select a single record.!**", icon="🚨")
+            st.error("**Please select a single record!**", icon="🚨")
         else:
             for value in self.table_inventory['Update']:
                 if value:
@@ -23,7 +23,7 @@ class Inventory_Module:
                     item_id = self.table_inventory['item_id'][index]
                     item_name = self.table_inventory['item_name'][index]
                     with st.expander("", expanded=True):
-                        st.subheader(f":blue[**ITEM ID**]: :blue[{self.table_inventory['item_id'][index]}]")
+                        st.subheader(f"**ITEM NAME**: :blue[{self.table_inventory['item_name'][index]}]")
                         with st.form("Update item information"):
                             isUpdateSuccess = False
                             isRemove = False
@@ -33,25 +33,27 @@ class Inventory_Module:
                                 with row_1_1:
                                     item_name = st.text_input(":blue[**Item name**]", f"{self.table_inventory['item_name'][index]}")
                                 with row_1_2:
-                                    item_price = st.text_input(":blue[**Item Price**]", f"{self.table_inventory['price'][index]}")
+                                    item_price = st.number_input(":blue[**Price per item**]", self.table_inventory['price'][index], step= 1000)
                                 with row_2_1:
-                                    item_total = st.text_input(":blue[**Total**]", f"{self.table_inventory['total'][index]}")
+                                    item_total = st.number_input(":blue[**Number of items**]", int(self.table_inventory['total'][index]), step= 1)
                                 with row_2_2:
-                                    item_remain = st.text_input(":blue[**Remain**]", f"{self.table_inventory['remain'][index]}")
-                                col1_remove_item, _, col3_update_item = st.columns(3)
-                                with col1_remove_item:
-                                    remove_button = st.form_submit_button("**Remove**", type="primary")
-                                    if remove_button:
+                                    item_remain = st.text_input(":blue[**Remain**]", self.table_inventory['remain'][index], disabled=True)
+
+                                update_col,_,_,_,_,_,_,_,remove_col = st.columns(9)
+                                with remove_col:
+                                    remove_button = st.form_submit_button(":red[**Remove**]")
+                                with update_col:
+                                        udpate_button = st.form_submit_button("**Update**", type="primary")
+                                if remove_button:
                                         with st.spinner('Processing...'):
                                             time.sleep(2)
                                         isRemove = True
                                         isRemove = self.mydb.remove_item(item_id)
-                                with col3_update_item:
-                                    udpate_button = st.form_submit_button("**Update Item**", type="primary")
-                                    if udpate_button:
+
+                               
+                                if udpate_button:
                                         with st.spinner('Processing...'):
                                             time.sleep(2)
-                                        
                                         #check if item is valid to add
                                         if item_name == self.table_inventory['item_name'][index] and item_price == str(self.table_inventory['price'][index]) and item_remain == str(self.table_inventory['remain'][index]) and item_total == str(self.table_inventory['total'][index]):
                                             st.warning("You haven't done the update yet")
@@ -60,7 +62,7 @@ class Inventory_Module:
                                             isUpdateSuccess = self.mydb.update_item_inventory(item_id, item_name, int(item_price), int(item_total), int(item_remain))
                                         elif item_name == "" or item_price == "" or item_total == "" or item_remain == "":
                                             st.error("Item information must not be empty!")
-                                            
+                                                
                             if isUpdateSuccess:
                                 st.success("Item information has been updated")
                                 time.sleep(2)
