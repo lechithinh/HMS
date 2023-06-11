@@ -33,7 +33,7 @@ class Inventory_Module:
                                 with row_1_1:
                                     item_name = st.text_input(":blue[**Item name**]", f"{self.table_inventory['item_name'][index]}")
                                 with row_1_2:
-                                    item_price = st.number_input(":blue[**Price per item**]", self.table_inventory['price'][index], step= 1000)
+                                    item_price = st.number_input(":blue[**Price per item (VND)**]", self.table_inventory['price'][index], step= 1000)
                                 with row_2_1:
                                     item_total = st.number_input(":blue[**Number of items**]", int(self.table_inventory['total'][index]), step= 1)
                                 with row_2_2:
@@ -83,7 +83,7 @@ class Inventory_Module:
                 with col1:
                     total = st.slider(':blue[**Number of products**]', 0, 150, 0)
                 with col2:
-                    price = st.number_input(":blue[**Price per item**]", 5000, step= 500)
+                    price = st.number_input(":blue[**Price per item (VND)**]", 10000, step= 500)
 
                 add_item = st.form_submit_button("Add an item", type = "primary")
                 if add_item:

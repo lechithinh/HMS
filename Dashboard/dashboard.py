@@ -33,9 +33,9 @@ def Dashboard(mydb):
 
 
     manager_card, staff_card, desk_card = st.columns(3)
-    manager_card.metric(label="Room Available", value=status_count["Available"])
-    staff_card.metric(label="Total Inventory", value=count_item)
-    desk_card.metric(label="Total Staff", value=count_staff)
+    manager_card.metric(label="Room Available", value=status_count["Available"], delta=-5)
+    staff_card.metric(label="Total Inventory", value=count_item,delta=5)
+    desk_card.metric(label="Total Staff", value=count_staff,delta=5)
     style_metric_cards(border_left_color='#F39D9D')
     
     
@@ -103,7 +103,7 @@ def Dashboard(mydb):
             "Date": temp,
             "Total guest": guest_char_Table["num_guest"],
         })
-        st.write(alt.Chart(data, width=700, height=350).mark_bar().encode(x=alt.X("Date", sort=None),y="Total guest",))
+        st.write(alt.Chart(data, width=500, height=320).mark_bar().encode(x=alt.X("Date", sort=None),y="Total guest",))
 
         
     st.divider()
@@ -118,7 +118,7 @@ def Dashboard(mydb):
     with row_1_3:
         st.write(":blue[**Contact with**]")
         st.write("📱 :blue[+84-974-02038]")
-        st.write("📨 :blue[hotelvipro@gmail.com]")
+        st.write("📨 :blue[hms@gmail.com]")
         
     st.divider()
     image_map = Image.open('assets\map.png')

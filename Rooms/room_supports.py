@@ -46,8 +46,19 @@ def room_validation(list_of_room, room_name, floor, room_type,room_price, beds )
         isValid = False
         st.error("**Room name** is not valid!")
     
+    if floor == "" or room_type == "" or room_price == "" or beds == "":
+        isValid = False
+        st.error("Fields must not be empty!")
+    
+    return isValid
 
-
+def update_room_validation(list_of_room,current_room_name,room_name, floor, room_type,room_price, beds):
+    isValid = True
+    list_of_room.remove(current_room_name)
+    if room_name in list_of_room or room_name == "":
+        isValid = False
+        st.error("**Room name** is not valid!")
+    
     if floor == "" or room_type == "" or room_price == "" or beds == "":
         isValid = False
         st.error("Fields must not be empty!")
