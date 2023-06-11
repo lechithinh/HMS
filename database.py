@@ -271,7 +271,7 @@ class DataBase:
             return False
 
     def get_inventory_table_in_room(self):
-        query = "SELECT item_name, remain FROM inventory where isActive = 'TRUE'"
+        query = "SELECT item_name, remain FROM inventory where isActive = 'TRUE' and remain > 0"
         self.Cursor.execute(query)
         data = self.Cursor.fetchall()
     
