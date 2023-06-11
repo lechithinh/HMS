@@ -116,7 +116,7 @@ class DataBase:
             return False
     #CHECK-IN
     def get_room_table(self):
-        query = "SELECT * FROM room"
+        query = "SELECT * FROM room ORDER BY floor ASC"
         self.Cursor.execute(query)
         data = self.Cursor.fetchall()
 
@@ -585,6 +585,32 @@ class DataBase:
             return table_bill
         except:
             return False
+        
+    #dashboard
+    def guest_chart(self):
+        query = """SELECT DATE(checkin_date) as checkin_date, count(guest_id)as num_guest
+                    FROM booking inner join booking_guest
+                    ON booking.booking_id = booking_guest.booking_id
+                    GROUP BY DATE(checkin_date)
+                    ORDER BY DATE(checkin_date) DESC
+                    LIMIT 7;
+        """
+        self.Cursor.execute(query)
+        data = self.Cursor.fetchall()
+
+        guest_chart_table = {
+            "check_in date": [],
+            "num_guest":[]
+            }
+
+        for item in data:
+                guest_chart_table["check_in date"].append(item[0])
+                guest_chart_table["num_guest"].append(item[1])
+        print(guest_chart_table)
+        
+        return guest_chart_table
+    
+    
 def main():
     mydb = DataBase("localhost", "root", "huynhcongthien", "hms")
     
