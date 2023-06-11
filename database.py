@@ -232,7 +232,7 @@ class DataBase:
     
     def update_inventory(self,product, amount):
         query = """UPDATE inventory 
-                SET remain = remain - %s, modified_at = current_timestamp()
+                SET remain = remain - %s, updated_at = current_timestamp()
                 WHERE item_name = %s"""
         try: 
             self.Cursor.execute(query, (amount,product))
@@ -415,12 +415,16 @@ class DataBase:
                     FROM `order`
                     WHERE booking_id = {booking_id}
         """
-        
-        query2 = f"""SELECT TIMESTAMPDIFF(Day,checkin_date,checkout_date) * room_price as room_price
+        query2= f"""SELECT DATEDIFF(DATE(checkout_date), DATE(checkin_date)) * room_price as room_price
                     FROM booking inner join room
                     ON booking.room_id = room.room_id
-                    WHERE booking_id = {booking_id}
-        """
+                    WHERE booking_id = {booking_id}"""
+        
+        # query2 = f"""SELECT TIMESTAMPDIFF(Day,checkin_date,checkout_date) * room_price as room_price
+        #             FROM booking inner join room
+        #             ON booking.room_id = room.room_id
+        #             WHERE booking_id = {booking_id}
+        # """
         query3 =  f"SELECT checkin_date, checkout_date, room_type, room_beds,TIMESTAMPDIFF(Day,checkin_date,checkout_date)  FROM booking inner join room on booking.room_id = room.room_id WHERE booking_id = {booking_id}"
 
         self.Cursor.execute(query1)
