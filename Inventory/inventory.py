@@ -33,7 +33,7 @@ class Inventory_Module:
                                 with row_1_1:
                                     item_name = st.text_input(":blue[**Item name**]", f"{self.table_inventory['item_name'][index]}")
                                 with row_1_2:
-                                    item_price = st.number_input(":blue[**Price per item (VND)**]", self.table_inventory['price'][index], step= 1000)
+                                    item_price = st.number_input(":blue[**Price per item (VND)**]", self.table_inventory['price'][index], step= 1000, value=10000)
                                 with row_2_1:
                                     item_total = st.number_input(":blue[**Number of items**]", int(self.table_inventory['total'][index]), step= 1)
                                 with row_2_2:
@@ -91,14 +91,18 @@ class Inventory_Module:
                         time.sleep(2)
                     
                     #check if item is valid to add
-                    if item_name != "" and check_duplicate_item(item_name, self.table_inventory['item_name']):
-                        isProductadded = self.mydb.add_inventory(item_name,total,price)
-                    elif item_name == "":
+                    if item_name == "":
                         st.error("Item name must not be empty!")
-                    elif check_duplicate_item(item_name, self.table_inventory['item_name']) == False:
+
+                    if check_duplicate_item(item_name, self.table_inventory['item_name']) == False:
                         st.error('The item is in stock!')
-                        
-                            
+
+                    if total == 0:
+                        st.error("Number of the item must be > 0")    
+
+                    if item_name != "" and check_duplicate_item(item_name, self.table_inventory['item_name']) and total != 0:
+                        isProductadded = self.mydb.add_inventory(item_name,total,price)  
+
             if isProductadded:
                 st.success("You have added a new product")
                 time.sleep(1)
