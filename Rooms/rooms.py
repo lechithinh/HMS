@@ -35,7 +35,7 @@ class Rooms_Module:
                     room_type_values = ["VIP","NORMAL"]
                     room_type = st.selectbox("Room type",room_type_values, index = room_type_values.index(table["Room type"][index]))
                 with row_2_2:
-                    room_price = st.number_input("Price (VND)", min_value=500, step=100, value=table["Room price"][index] )
+                    room_price = st.number_input("Price (VND)", min_value=500000, step=50000, value=table["Room price"][index] )
                 with row_3_1:
                     num_bed_values = [1,2]
                     if current_room_status == "Available":
@@ -480,7 +480,7 @@ class Rooms_Module:
                         ':blue[**Select the floor**]',
                         ('1', '2'))
                 with row_2_2:
-                    room_price = st.number_input(':blue[**Room price**]', min_value=500, step=100 )
+                    room_price = st.number_input(':blue[**Room price**]', min_value=500000, step=50000 )
                 
                 with row_3_1:
                     beds = st.selectbox(':blue[**Select number of beds**]',
