@@ -7,7 +7,7 @@ import base64
 
 import time
 import streamlit_authenticator as stauth
-from Staff.staff_helpers import display_table_staff, check_valid_phone, check_user_name, check_name_staff
+from Staff.staff_helpers import display_table_staff, check_valid_phone, check_user_name, check_name_staff, check_password
 
 # Global Helpers
 from global_helpers import DisplayTextCenter, AddFourRows
@@ -174,7 +174,9 @@ class Staff_Module:
                         if len(Name) == 0 or len(Phone) == 0 or len(username) == 0 or len(password) == 0 or len(Address) ==0:
                             st.error("Must enter full information!")
                         else:
-                            if check_valid_phone(Phone) and check_user_name(username, staff_data['Username']) and check_name_staff(Name):
+                            if check_password(password) == False:
+                                st.error("Password must have at least number, character and special character")
+                            elif check_valid_phone(Phone) and check_user_name(username, staff_data['Username']) and check_name_staff(Name):
                                 Add_staff_message = self.mydb.Add_New_Staff(
                                         Name, Phone, username, hashed_password[0], Date_of_birth, Role, Address)
                             elif check_valid_phone(Phone) == False:
