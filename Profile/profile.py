@@ -5,7 +5,7 @@ import streamlit_authenticator as stauth
 
 #Helpers
 from global_helpers import DisplayTextCenter
-from Staff.staff_helpers import check_valid_phone, check_name_staff
+from Staff.staff_helpers import check_valid_phone, check_name_staff, check_password
 
 
     
@@ -48,7 +48,9 @@ def Profile(mydb, staff_id):
                         if update_profile:
                             with st.spinner('Processing...'):
                                 time.sleep(2)
-                            if check_valid_phone(staff_phone) and check_name_staff(staff_name):
+                            if check_password(staff_password) == False:
+                                st.error("Password must have at least number, character and special character")
+                            elif check_valid_phone(staff_phone) and check_name_staff(staff_name):
                                 if staff_password: #update password
                                     isUpdatedSucess =  mydb.Update_Profile_Staff(staff_name,staff_phone,staff_address,staff_date,staff_username,staff_role, hashed_password[0], staff_id)
                                 else: 
@@ -56,7 +58,7 @@ def Profile(mydb, staff_id):
                             elif check_valid_phone(staff_phone) == False:
                                 st.error("Phone number unvalid")
                             elif check_name_staff(staff_name) == False:
-                                st.error("Nname must be alphabet")
+                                st.error("Name must be alphabet")
                             
                 if isUpdatedSucess:
                     st.success("You update has been completed")

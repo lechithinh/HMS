@@ -1,5 +1,6 @@
 
 import streamlit as st
+import re
 def display_table_staff(staff_table):
        table_new = {
               "Update": [],
@@ -43,4 +44,13 @@ def check_name_staff(username):
               return True
        else:
               return False
+def check_password(password):
+       if len(password) < 10:
+              return False
+       else:
+              #check (?=.*\d) at least  number, (?=.*[a-zA-Z]) at least character, (?=.*[\W_]) at least special character
+              if re.search(r"(?=.*\d)(?=.*[a-zA-Z])(?=.*[\W_])", password):
+                     return True
+              else:
+                     return False
 

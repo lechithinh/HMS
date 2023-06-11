@@ -568,8 +568,25 @@ class DataBase:
             return True
         except:
             return False
+    def get_table_bill(self):
+        query = """select sum(total_price) as total, DATE(created_at) as date_only
+                from bill
+                group by date_only"""
+        try:
+            self.Cursor.execute(query)
+            data = self.Cursor.fetchall()
+            table_bill = {
+                'total_price': [],
+                'created_at': []
+            }
+            for item in data:
+                table_bill["total_price"].append(int(item[0]))
+                table_bill["created_at"].append(item[1])
+            return table_bill
+        except:
+            return False
 def main():
-    mydb = DataBase("127.0.0.1", "root", "uynnibeo2104", "hms")
+    mydb = DataBase("localhost", "root", "huynhcongthien", "hms")
     
     
     
@@ -593,7 +610,8 @@ def main():
     # mydb.add_a_booking(2,"2023-01-01","2023-01-01",2,4,"FALSE")
     # mydb.get_room_table()
     # print(mydb.get_inventory_table())
-    mydb.finalize_a_bill(11)
+    data = mydb.get_table_bill()
+    print(data)
     # print(mydb.g)
 if __name__ == "__main__":
     main()
