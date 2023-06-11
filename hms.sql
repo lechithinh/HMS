@@ -34,7 +34,7 @@ CREATE TABLE `Guest`(
 DROP TABLE IF EXISTS Inventory;
 CREATE TABLE `Inventory`(
 	item_id int NOT NULL AUTO_INCREMENT,
-    item_name varchar(50) DEFAULT NULL,
+    item_name varchar(50) DEFAULT NULL UNIQUE,
     price int DEFAULT NULL,
     total int DEFAULT NULL,
     remain int DEFAULT NULL,

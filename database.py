@@ -425,7 +425,7 @@ class DataBase:
         #             ON booking.room_id = room.room_id
         #             WHERE booking_id = {booking_id}
         # """
-        query3 =  f"SELECT checkin_date, checkout_date, room_type, room_beds,TIMESTAMPDIFF(Day,checkin_date,checkout_date)  FROM booking inner join room on booking.room_id = room.room_id WHERE booking_id = {booking_id}"
+        query3 =  f"SELECT checkin_date, checkout_date, room_type, room_beds,DATEDIFF(DATE(checkout_date), DATE(checkin_date))  FROM booking inner join room on booking.room_id = room.room_id WHERE booking_id = {booking_id}"
 
         self.Cursor.execute(query1)
         order_price = self.Cursor.fetchone()
