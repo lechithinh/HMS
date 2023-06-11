@@ -4,7 +4,6 @@ from streamlit_card import card
 from streamlit_extras.metric_cards import style_metric_cards
 import datetime
 import base64
-
 import time
 import streamlit_authenticator as stauth
 from Staff.staff_helpers import display_table_staff, check_valid_phone, check_user_name, check_name_staff, check_password
@@ -92,7 +91,7 @@ class Staff_Module:
                                             ":blue[**Address**]", f"{table_staff['Address'][index]}")
                                     with row_2_2:
                                         staff_role = st.selectbox(
-                                            ":blue[**Role**]", ("Manager", "Staff", "FrontDesk"))
+                                            ":blue[**Role**]", ("Manager", "Staff", "Owner"))
                                     with row_3_1:
                                         date_obj = table_staff['Date Of Birth'][index]
                                         year = date_obj.year
@@ -105,16 +104,16 @@ class Staff_Module:
                                         staff_username = st.text_input(
                                             ":blue[**Username**]", f"{table_staff['Username'][index]}", disabled=True)
 
-                                    col1_remove_staff, _, col3_update_staff = st.columns(3)
-                                    with col1_remove_staff:
-                                        remove_button = st.form_submit_button(":blue[**Remove**]")
+                                    col1_update_staff, _,_,_, col3_remove_staff = st.columns(5)
+                                    with col3_remove_staff:
+                                        remove_button = st.form_submit_button(":red[**Remove**]")
                                         if remove_button:
                                             isRemove = True
                                             self.mydb.Hide_staff(staff_id)
                                         # Remove the user
-                                    with col3_update_staff:
+                                    with col1_update_staff:
                                         updated_button = st.form_submit_button(
-                                            "Update Staff Info", type="primary")
+                                            "Update", type="primary")
                                         if updated_button:
                                             isUpdateSucess = self.mydb.Update_One_Staff(
                                                 staff_name, staff_phone, staff_address, Date_of_birth, staff_username, staff_role, staff_id,
@@ -133,7 +132,7 @@ class Staff_Module:
         DisplayTextCenter("Add A New Staff")
         staff_data = self.mydb.get_staff_table()
 
-        with st.form("Add Staff Information", clear_on_submit=True):
+        with st.form("Add Staff Information"):
             with st.container():
                 rows_columns = AddFourRows()
                 with rows_columns[0][0]:
@@ -153,8 +152,7 @@ class Staff_Module:
                         hashed_password = stauth.Hasher([password]).generate()
                 with rows_columns[2][0]:
                     Date_of_birth = st.date_input(
-
-                        ":blue[**Enter date of birth**]")
+                            ":blue[**Date of birth**]")
                 with rows_columns[2][1]:
                     Role = st.selectbox(
                         ":blue[**Role**]", ("Manager", "Staff", "Owner"))
@@ -165,26 +163,25 @@ class Staff_Module:
                     salary = st.number_input(
                         ':blue[**Salary**]', 5000000
                     )
-                _, _, col3_button = st.columns(3)
-                with col3_button:
-                    add_button = st.form_submit_button("Create the staff info", type="primary")
-                    if add_button:
-                        with st.spinner('Processing...'):
-                            time.sleep(2)
-                        if len(Name) == 0 or len(Phone) == 0 or len(username) == 0 or len(password) == 0 or len(Address) ==0:
-                            st.error("Must enter full information!")
-                        else:
-                            if check_password(password) == False:
-                                st.error("Password must have at least number, character and special character")
-                            elif check_valid_phone(Phone) and check_user_name(username, staff_data['Username']) and check_name_staff(Name):
-                                Add_staff_message = self.mydb.Add_New_Staff(
-                                        Name, Phone, username, hashed_password[0], Date_of_birth, Role, Address)
-                            elif check_valid_phone(Phone) == False:
-                                st.error("Phone number unvalid")
-                            elif  check_user_name(username, staff_data['Username']) == False:
-                                st.error("This account already exists! Please choose another account")
-                            elif check_name_staff(Name) == False:
-                                st.error("Staff name must be alphabet")
+
+            add_button = st.form_submit_button("Create", type="primary")
+            if add_button:
+                with st.spinner('Processing...'):
+                    time.sleep(2)
+                if len(Name) == 0 or len(Phone) == 0 or len(username) == 0 or len(password) == 0 or len(Address) ==0:
+                    st.error("Must enter full information!")
+                else:
+                    if check_password(password) == False:
+                        st.error("Password must have at least 8 number, character and special character")
+                    elif check_valid_phone(Phone) and check_user_name(username, staff_data['Username']) and check_name_staff(Name):
+                        Add_staff_message = self.mydb.Add_New_Staff(
+                                Name, Phone, username, hashed_password[0], Date_of_birth, Role, Address)
+                    elif check_valid_phone(Phone) == False:
+                        st.error("Phone number is invalid")
+                    elif  check_user_name(username, staff_data['Username']) == False:
+                        st.error("The username already exists! Please choose another one")
+                    elif check_name_staff(Name) == False:
+                        st.error("Staff name must be alphabet")
                                 
                                 
 
