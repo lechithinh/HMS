@@ -4,7 +4,8 @@ import numpy as np
 from streamlit_extras.metric_cards import style_metric_cards
 from PIL import Image
 from datetime import datetime, timedelta
-
+import altair as alt
+import json
 
 
 def Dashboard(mydb):
@@ -92,11 +93,19 @@ def Dashboard(mydb):
         st.line_chart(chart_data)
 
     with fig_col2:
-        chart_data = pd.DataFrame(
-            np.random.randn(20, 3),
-            columns=["a", "b", "c"])
+        guest_char_Table = mydb.guest_chart()
+        temp = []
+        for item in guest_char_Table["check_in date"]:
+            item = json.dumps(item, default=str)
+            temp.append(item[1:-1])
 
-        st.bar_chart(chart_data)
+        data = pd.DataFrame( {
+            "Date": temp,
+            "Total guest": guest_char_Table["num_guest"],
+        })
+        st.write(alt.Chart(data, width=700, height=350).mark_bar().encode(x=alt.X("Date", sort=None),y="Total guest",))
+
+        
     st.divider()
     row_1_1,  row_1_2, row_1_3 = st.columns(3)
     with row_1_1:
