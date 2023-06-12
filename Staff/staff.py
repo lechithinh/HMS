@@ -36,7 +36,6 @@ class Staff_Module:
         # Show the table data
         table_staff = st.data_editor(staff_data, use_container_width=True, column_config={"Suspend at": None})
 
-        print(table_staff)
         count = 0
         for value in table_staff['Update']:
             if value:
