@@ -27,6 +27,11 @@ class DataBase:
         data = self.Cursor.fetchone()
         return data[0]
 
+    def get_staff_status(self, staff_id):
+        query = f"SELECT `status` FROM staff WHERE staff_id = {staff_id}"
+        self.Cursor.execute(query)
+        data = self.Cursor.fetchone()
+        return data[0]
     
     def get_staff_login(self):
         query = "SELECT staff_name, username, password FROM staff"
@@ -159,7 +164,8 @@ class DataBase:
             "Max people": [],
             "Status": [],
             "is Active":[],
-            "Created at":[]
+            "Created at":[],
+            "Removed at":[]
             }
 
         for item in data:
@@ -175,6 +181,7 @@ class DataBase:
             table_data["Status"].append(item[7])
             table_data["is Active"].append(item[8])
             table_data["Created at"].append(item[9])
+            table_data["Removed at"].append(item[10])
 
             isExist = False
             for temp in data1:
@@ -282,6 +289,24 @@ class DataBase:
         try:
             room_status = 'Available'
             self.Cursor.execute(query, (room_name, floor, room_type, room_price, room_beds, max_people, room_status))
+            self.mydb.commit()
+            return True
+        except:
+            return False
+
+    def remove_a_room(self, room_id):
+        query = f"UPDATE room SET isActive = 'FALSE', removed_at = current_timestamp() WHERE room_id = {room_id}"
+        try:
+            self.Cursor.execute(query)
+            self.mydb.commit()
+            return True
+        except:
+            return False
+    
+    def update_removed_room(self, room_id):
+        query = f"UPDATE room SET `isActive` = 'TRUE', removed_at = null where room_id = {room_id}"
+        try:
+            self.Cursor.execute(query)
             self.mydb.commit()
             return True
         except:
@@ -663,8 +688,11 @@ def main():
     # print(data)
     # import streamlit_authenticator as stauth
 
-    # hashed_password = stauth.Hasher(["T"]).generate()
+    # hashed_password = stauth.Hasher(["M"]).generate()
     # print(hashed_password)
-    print(mydb.get_staff_table())
+    # print(mydb.get_staff_table())
+    # print(mydb.get_staff_status(11))
+    # mydb.remove_a_room(3)
+    print(mydb.get_room_table())
 if __name__ == "__main__":
     main()
