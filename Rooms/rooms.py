@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 #Helpers
 from global_helpers import DisplayTextCenter
 
-from Rooms.room_supports import guest_validation, room_validation, num_guest, get_max_people,update_room_validation
+from Rooms.room_supports import guest_validation, room_validation, num_guest, get_max_people,update_room_validation, disable
 
 
 class Rooms_Module:
@@ -15,6 +15,7 @@ class Rooms_Module:
         self.mydb = mydb
     def Update_room_infor(self, table, index):
         isUpdate = False 
+        isRemove = False
         with st.form("Room inforamtion"):                                 
             with st.container():
                 st.subheader(
@@ -44,8 +45,16 @@ class Rooms_Module:
                         disable = True
                     room_bed = st.selectbox("Number of bed",num_bed_values,num_bed_values.index(table["Room beds"][index]), disabled= disable)
     
-  
-                Update_Room_Button = st.form_submit_button("Update the room", type = "primary") 
+                update_col,_,_,remove_col = st.columns(4)
+                with update_col:
+                    Update_Room_Button = st.form_submit_button("Update the room", type = "primary") 
+                with remove_col:
+                    if current_room_status == "Available":
+                        disable = False
+                    else:
+                        disable = True
+                    Remove_Room_Button = st.form_submit_button("Remove the room", type='secondary', disabled=disable)
+               
                 if Update_Room_Button:
                     with st.spinner('Processing...'):
                         time.sleep(2)
@@ -60,12 +69,23 @@ class Rooms_Module:
                         #update room
                         max_pp = get_max_people(room_bed)
                         self.mydb.update_room(room_name,floor,room_type,room_price,room_bed,max_pp,table['Room ID'][index])
+                if Remove_Room_Button:
+                    isRemove = True
+                    self.mydb.remove_a_room(table['Room ID'][index])
+
 
                 if isUpdate:            
                     update_success_msg = st.success("You have updated the information of the room") 
                     time.sleep(1)
                     update_success_msg.empty()
                     st.experimental_rerun()
+                
+                if isRemove:
+                    remove_sucess_msg = st.success("You have removed the room") 
+                    time.sleep(1)
+                    remove_sucess_msg.empty()
+                    st.experimental_rerun()
+
         
     def view_available_room(self, table, index):
         checkin_column, room_infor_column = st.columns(2)
@@ -203,7 +223,7 @@ class Rooms_Module:
 
                         #show sucessfully login message and rerun
                         with st.spinner('Processing...'):
-                            time.sleep(4)
+                            time.sleep(2)
                         checkin_success_msg = st.success("The check-in process has been completed successfully") 
                         time.sleep(1)
                         checkin_success_msg.empty()
@@ -231,8 +251,9 @@ class Rooms_Module:
         slider_list = [""] * len(inventory_table["item name"])
 
         
-
-
+        if "disabled" not in st.session_state:
+            st.session_state.disabled=False
+        
         #room and booking and book_guest => guest id and guest ==> guest infor (ok)
         guest_column, Room_Infor_Column = st.columns(2)
         with guest_column:
@@ -289,9 +310,10 @@ class Rooms_Module:
                     #Checkout and update button
                     checkout_col,_ ,_, update_col = st.columns(4)
                     with checkout_col:
-                        checkout_button = st.form_submit_button("Checkout", type = "primary")
+                        checkout_button = st.form_submit_button("Checkout", type = "primary", on_click=disable)
+
                     with update_col:
-                        updated_infor_button = st.form_submit_button("Update infor", type = "primary")
+                        updated_infor_button = st.form_submit_button("Update infor", type = "primary", disabled=st.session_state.disabled)
                     
                     if checkout_button:
                         #total charge = room price + service price
@@ -439,9 +461,9 @@ class Rooms_Module:
         col3.metric(label="Total Rooms", value=total_rooms)
         style_metric_cards(border_left_color='#F39D9D')
 
+        
 
-
-        table = st.data_editor(room_table, use_container_width=True, hide_index = 1, column_config={"Room ID": None, "is Active": None, "Created at": None, "Max people": None})
+        table = st.data_editor(room_table, use_container_width=True, hide_index = 1, column_config={"Room ID": None, "Created at": None, "Max people": None, "Removed at":None})
 
         # Only one room can be selected
         count = 0
@@ -452,14 +474,29 @@ class Rooms_Module:
             st.error("**Please select a single record.!**", icon="🚨")
         else:
             for value in table['View information']:
-                if value:
-                        index = table['View information'].index(value)
+                index = table['View information'].index(value)
+                if value and table['is Active'][index] == 'TRUE':
                         #Show an expander for the selected room
                         if table["Status"][index] == "Available":
+                                # del disabled session state
+                                if"disabled" in st.session_state:
+                                    del st.session_state.disabled
                                 self.view_available_room(table, index)
                         if table["Status"][index] == "Occupied":   
                                 self.view_occupied_room(table, index, staff_id)
-                               
+                if value and table['is Active'][index] == 'FALSE':
+                    active_button = st.button("Active this room",type="primary", key="active staff")
+                    st.markdown(f'''<h4 style = 'color: red;'>This room was removed at {table['Removed at'][index]} </h4>''', unsafe_allow_html=True)
+
+                    if active_button:
+                        isActiveSuccess = self.mydb.update_removed_room(table['Room ID'][index])
+                        with st.spinner('Processing...'):
+                            time.sleep(2)
+                        if isActiveSuccess:
+                            st.success(
+                                "Room has been activated!")
+                            time.sleep(2)
+                            st.experimental_rerun()         
     def Add_a_room(self, table):
         #init data
         isNoti = False
