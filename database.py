@@ -51,7 +51,8 @@ class DataBase:
         return data
     
     def get_staff_table(self):
-        query = "SELECT * FROM staff WHERE isActive = 'TRUE'"
+        # query = "SELECT * FROM staff WHERE isActive = 'TRUE'"
+        query = "SELECT * FROM staff"
         self.Cursor.execute(query)
         data = self.Cursor.fetchall()
     
@@ -64,7 +65,9 @@ class DataBase:
             'Address': [],
             "Date Of Birth": [],
             "Role": [],
-            "Username": []
+            "Username": [],
+            "Status" : [],
+            "Suspend at": []
             }
 
         for item in data:
@@ -76,6 +79,8 @@ class DataBase:
                 staff_data["Date Of Birth"].append(item[5])
                 staff_data["Role"].append(item[6])
                 staff_data["Username"].append(item[3])
+                staff_data["Status"].append(item[8])
+                staff_data["Suspend at"].append(item[10])
         return staff_data
     
     def Update_One_Staff(self, Name, Phone, Address, DateOfBirth, Username, Role, staff_id):
@@ -107,13 +112,25 @@ class DataBase:
             return False
         
     def Hide_staff(self, staff_id):
-        query = f"UPDATE staff SET isActive = 'FALSE' where staff_id = {staff_id}"
+        # query = f"UPDATE staff SET isActive = 'FALSE' where staff_id = {staff_id}"
+        query = f"UPDATE staff SET `status` = 'Suspend', suspend_at = current_timestamp() where staff_id = {staff_id}"
         try:
             self.Cursor.execute(query)
             self.mydb.commit()
             return True
         except:
             return False
+        
+    def Update_suspended_staff(self, staff_id):
+        query = f"UPDATE staff SET `status` = 'Active', suspend_at = null where staff_id = {staff_id}"
+        try:
+            self.Cursor.execute(query)
+            self.mydb.commit()
+            return True
+        except:
+            return False
+        
+
     #CHECK-IN
     def get_room_table(self):
         query = "SELECT * FROM room ORDER BY floor ASC"
@@ -618,7 +635,7 @@ class DataBase:
     
     
 def main():
-    mydb = DataBase("localhost", "root", "huynhcongthien", "hms")
+    mydb = DataBase("127.0.0.1", "root", "uynnibeo2104", "hms")
     
     
     
@@ -642,8 +659,12 @@ def main():
     # mydb.add_a_booking(2,"2023-01-01","2023-01-01",2,4,"FALSE")
     # mydb.get_room_table()
     # print(mydb.get_inventory_table())
-    data = mydb.get_table_bill()
-    print(data)
-    # print(mydb.g)
+    # data = mydb.get_table_bill()
+    # print(data)
+    # import streamlit_authenticator as stauth
+
+    # hashed_password = stauth.Hasher(["T"]).generate()
+    # print(hashed_password)
+    print(mydb.get_staff_table())
 if __name__ == "__main__":
     main()

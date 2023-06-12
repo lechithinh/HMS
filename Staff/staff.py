@@ -34,9 +34,9 @@ class Staff_Module:
         style_metric_cards(border_left_color='#F39D9D')
 
         # Show the table data
-        table_staff = st.data_editor(staff_data, use_container_width=True)
+        table_staff = st.data_editor(staff_data, use_container_width=True, column_config={"Suspend at": None})
 
-
+        print(table_staff)
         count = 0
         for value in table_staff['Update']:
             if value:
@@ -45,8 +45,9 @@ class Staff_Module:
             st.error("**Please select a single record.!**", icon="🚨")
         else:
             for value in table_staff['Update']:
-                if value:
-                    index = table_staff['Update'].index(value)
+                index = table_staff['Update'].index(value)
+
+                if value and table_staff['Status'][index] == 'Active' :
                     staff_id = table_staff['Staff ID'][index]
                     username = table_staff['Username'][index]
                     # Show an expander for the selected room
@@ -106,7 +107,7 @@ class Staff_Module:
 
                                     col1_update_staff, _,_,_, col3_remove_staff = st.columns(5)
                                     with col3_remove_staff:
-                                        remove_button = st.form_submit_button(":red[**Remove**]")
+                                        remove_button = st.form_submit_button(":red[**Suspend**]")
                                         if remove_button:
                                             isRemove = True
                                             self.mydb.Hide_staff(staff_id)
@@ -123,9 +124,22 @@ class Staff_Module:
                                     st.success(
                                         "Staff information has been updated")
                                 if isRemove:
-                                    st.success("Remove staff successful")
+                                    st.success("Suspend staff successful")
                                     time.sleep(1)
                                     st.experimental_rerun()
+                if value and table_staff['Status'][index] == 'Suspend' :
+                    active_button = st.button("Active this staff account",type="primary", key="active staff")
+                    st.markdown(f'''<h4 style = 'color: red;'>This account was suspended at {table_staff['Suspend at'][index]} </h4>''', unsafe_allow_html=True)
+
+                    if active_button:
+                        isActiveSuccess = self.mydb.Update_suspended_staff(table_staff['Staff ID'][index])
+                        with st.spinner('Processing...'):
+                            time.sleep(2)
+                        if isActiveSuccess:
+                            st.success(
+                                "Staff account has been activated!")
+                            time.sleep(2)
+                            st.experimental_rerun()
 
     def Add_a_staff(self):
         Add_staff_message = False
