@@ -79,3 +79,7 @@ def get_max_people(num_bed):
             2: 4
         }
     return max_pp[num_bed]
+
+
+def disable():  
+    st.session_state.disabled = True
