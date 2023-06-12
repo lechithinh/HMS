@@ -56,8 +56,9 @@ CREATE TABLE `Staff`(
     date_of_birth date DEFAULT NULL,
     `role` varchar(45) DEFAULT NULL,
     `password` varchar(100) DEFAULT NULL,
-    isActive varchar(45) default 'TRUE',
+    `status` varchar(45) default null,
 	created_at datetime default current_timestamp(),
+    suspend_at datetime default null,
     primary key(staff_id)
 )engine=InnoDB auto_increment=1 DEFAULT CHARSET=utf8mb4 collate=utf8mb4_0900_ai_ci;
 
