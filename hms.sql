@@ -15,6 +15,7 @@ CREATE TABLE `Room`(
     `status` varchar(45) DEFAULT NULL,
     isActive varchar(45) DEFAULT 'TRUE',
     created_at datetime default current_timestamp(),
+    removed_at datetime default null,
     primary key(room_id)
 )engine=InnoDB auto_increment=1 DEFAULT CHARSET=utf8mb4 collate=utf8mb4_0900_ai_ci;
 
