@@ -34,7 +34,7 @@ class DataBase:
         return data[0]
     
     def get_staff_login(self):
-        query = "SELECT staff_name, username, password FROM staff"
+        query = "SELECT staff_name, username, password FROM staff where `status` = 'Active'"
         self.Cursor.execute(query)
         data = self.Cursor.fetchall()
 
@@ -135,7 +135,16 @@ class DataBase:
         except:
             return False
         
-
+    def get_suspend_staff(self):
+        query = "SELECT username FROM staff WHERE `status` = 'Suspend'"
+        self.Cursor.execute(query)
+        data = self.Cursor.fetchall()
+        suspend_staff = []
+        for item in data:
+            suspend_staff.append(item[0])
+        
+        return suspend_staff
+    
     #CHECK-IN
     def get_room_table(self):
         query = "SELECT * FROM room ORDER BY floor ASC"
@@ -693,6 +702,7 @@ def main():
     # print(mydb.get_staff_table())
     # print(mydb.get_staff_status(11))
     # mydb.remove_a_room(3)
-    print(mydb.get_room_table())
+    # print(mydb.get_staff_login())
+    print(mydb.get_suspend_staff())
 if __name__ == "__main__":
     main()

@@ -8,7 +8,7 @@ class Inventory_Module:
         self.mydb = mydb
     def View_inventory_infor(self):
         inventory_data = self.mydb.get_inventory_table()
-        self.table_inventory = st.data_editor(inventory_data ,use_container_width= True, hide_index=1, column_config={'item_id': None})
+        self.table_inventory = st.data_editor(inventory_data ,use_container_width= True, hide_index=1, column_config={'item_id': None,'item_name':'Item name',  'price':'Price', 'total':'Total' , 'remain':'Remain', 'updated_at':'Updated at'})
 
         count = 0
         for value in self.table_inventory['Update']:

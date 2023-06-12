@@ -24,7 +24,7 @@ staff_login = mydb.get_staff_login()
 names = staff_login['staff_name']
 usernames = staff_login['username']
 hashed_passwords = staff_login['password']
-
+suspend_staff = mydb.get_suspend_staff()
 
 def get_base64(bin_file):
     with open(bin_file, 'rb') as f:
@@ -88,7 +88,10 @@ if st.session_state['authentication_status']: #Login successfully
         
 
 elif st.session_state['authentication_status'] == False: 
-    st.sidebar.error('Username/password is incorrect')
+    if username in suspend_staff:
+        st.sidebar.error("This account is suspended")
+    else:
+        st.sidebar.error('Username/password is incorrect')
     LoginPageInfor()
 elif st.session_state['authentication_status'] == None:
     st.sidebar.warning('Please enter your username and password')
