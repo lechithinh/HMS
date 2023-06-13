@@ -57,7 +57,7 @@ CREATE TABLE `Staff`(
     date_of_birth date DEFAULT NULL,
     `role` varchar(45) DEFAULT NULL,
     `password` varchar(100) DEFAULT NULL,
-    `status` varchar(45) default null,
+    `status` varchar(45) default 'Active',
 	created_at datetime default current_timestamp(),
     suspend_at datetime default null,
     primary key(staff_id)
