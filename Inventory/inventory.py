@@ -33,7 +33,7 @@ class Inventory_Module:
                                 with row_1_1:
                                     item_name = st.text_input(":blue[**Item name**]", f"{self.table_inventory['item_name'][index]}")
                                 with row_1_2:
-                                    item_price = st.number_input(":blue[**Price per item (VND)**]", self.table_inventory['price'][index], step= 1000, value=10000)
+                                    item_price = st.number_input(":blue[**Price per item (VND)**]", step= 1000, value=self.table_inventory['price'][index])
                                 with row_2_1:
                                     item_total = st.number_input(":blue[**Number of items**]", int(self.table_inventory['total'][index]), step= 1)
                                 with row_2_2:
