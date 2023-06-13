@@ -166,7 +166,7 @@ class Rooms_Module:
                             slider_list[idx] = st.slider(f"Number of {item_name}",0, inventory_table["remain"][idx])
 
 
-                checkin_button = st.form_submit_button("Checkin", type = "primary")
+                checkin_button = st.form_submit_button("Check-in", type = "primary")
                 
                 if checkin_button:
                     with st.spinner('Processing...'):
@@ -310,7 +310,7 @@ class Rooms_Module:
                     #Checkout and update button
                     checkout_col,_ ,_, update_col = st.columns(4)
                     with checkout_col:
-                        checkout_button = st.form_submit_button("Checkout", type = "primary", on_click=disable)
+                        checkout_button = st.form_submit_button("Check-out", type = "primary", on_click=disable)
 
                     with update_col:
                         updated_infor_button = st.form_submit_button("Update infor", type = "primary", disabled=st.session_state.disabled)
