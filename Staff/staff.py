@@ -115,13 +115,13 @@ class Staff_Module:
                                         updated_button = st.form_submit_button(
                                             "Update", type="primary")
                                         if updated_button:
-                                            if check_valid_phone(staff_phone) == True and check_user_name(staff_name, staff_data["Username"]) == True:
+                                            if check_valid_phone(staff_phone) == True and check_name_staff(staff_name) == True:
                                                 isUpdateSucess = self.mydb.Update_One_Staff(
                                                     staff_name, staff_phone, staff_address, Date_of_birth, staff_username, staff_role, staff_id,
                                                 )
                                             if check_valid_phone(staff_phone) == False:
                                                 st.error("Phone number is invalid")
-                                            if check_user_name(staff_name, staff_data["Username"]) == False:
+                                            if check_name_staff(staff_name) == False:
                                                 st.error("Staff name must be alphabet")
 
                                 if isUpdateSucess:
