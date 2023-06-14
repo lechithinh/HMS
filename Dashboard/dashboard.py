@@ -15,13 +15,13 @@ def Dashboard(mydb):
     room_table = mydb.get_room_table()
         #get inventory table
     inventory_table = mydb.get_inventory_table()
-    staff_table = mydb.get_staff_table()
+    staff_table = mydb.get_all_staff_username()
     status_count = {'Available':0, 'Occupied':0}
     
     #total rooms
     total_rooms = len(room_table['Room ID'])
     count_item = len(inventory_table['item_id'])
-    count_staff = len(staff_table['Staff ID'])
+    count_staff = len(staff_table)
 
 
     for status in room_table['Status']:
