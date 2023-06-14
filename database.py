@@ -55,7 +55,7 @@ class DataBase:
         data = self.Cursor.fetchone()
         return data
     
-    def get_staff_table(self):
+    def get_staff_table(self, staff_id):
         # query = "SELECT * FROM staff WHERE isActive = 'TRUE'"
         query = "SELECT * FROM staff"
         self.Cursor.execute(query)
@@ -76,6 +76,7 @@ class DataBase:
             }
 
         for item in data:
+            if item[0] != staff_id: 
                 staff_data["Update"].append(False)
                 staff_data["Staff ID"].append(item[0])
                 staff_data["Name"].append(item[1])
@@ -87,6 +88,15 @@ class DataBase:
                 staff_data["Status"].append(item[8])
                 staff_data["Suspend at"].append(item[10])
         return staff_data
+    
+    def get_all_staff_username(self):
+        query = "SELECT username FROM staff"
+        self.Cursor.execute(query)
+        data = self.Cursor.fetchall()
+        staff_username = []
+        for item in data:
+            staff_username.append(item[0])
+        return staff_username
     
     def Update_One_Staff(self, Name, Phone, Address, DateOfBirth, Username, Role, staff_id):
         query = "UPDATE staff SET staff_name = %s, phone_number = %s, address = %s, date_of_birth = %s, username = %s, role = %s WHERE staff_id = %s"
@@ -519,7 +529,7 @@ class DataBase:
     
 
     def update_guest_info(self, guest_id,  guest_name, phone, address, dob):
-        query = f"UPDATE guest SET guest_name = '{guest_name}', phone_number = {phone}, address = '{address}', date_of_birth='{dob}'WHERE guest_id = {guest_id}"
+        query = f"UPDATE guest SET guest_name = '{guest_name}', phone_number = '{phone}', address = '{address}', date_of_birth='{dob}'WHERE guest_id = {guest_id}"
         try:
             self.Cursor.execute(
                 query)
@@ -663,7 +673,6 @@ class DataBase:
         for item in data:
                 guest_chart_table["check_in date"].append(item[0])
                 guest_chart_table["num_guest"].append(item[1])
-        print(guest_chart_table)
         
         return guest_chart_table
     
@@ -703,6 +712,6 @@ def main():
     # print(mydb.get_staff_status(11))
     # mydb.remove_a_room(3)
     # print(mydb.get_staff_login())
-    print(mydb.get_suspend_staff())
+    # print(mydb.get_all_staff_username())
 if __name__ == "__main__":
     main()
