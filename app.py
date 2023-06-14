@@ -23,7 +23,7 @@ def Owner_App(mydb, staff_id):
     elif selected == "Inventory":
         Inventory(mydb)
     elif selected == "Staff":
-        Staff(mydb)
+        Staff(mydb, staff_id)
     else:
         Profile(mydb, staff_id)
         
