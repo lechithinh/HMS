@@ -1,8 +1,7 @@
 import streamlit as st
-import datetime
 from streamlit_card import card
 from streamlit_extras.metric_cards import style_metric_cards
-import datetime
+from datetime import datetime
 import base64
 import time
 import streamlit_authenticator as stauth
@@ -16,8 +15,8 @@ class Staff_Module:
     def __init__(self, mydb):
         self.mydb = mydb
 
-    def view_staff_infor(self):
-        staff_data = self.mydb.get_staff_table()
+    def view_staff_infor(self, staff_id):
+        staff_data = self.mydb.get_staff_table(staff_id)
         role_count = {'Manager': 0, 'Staff': 0, 'Owner': 0}
         for role in staff_data['Role']:
             if role == 'Manager':
@@ -54,7 +53,7 @@ class Staff_Module:
                         column_card, column_infor = st.columns(2)
                         # card for the selected room
                         with column_card:
-                            with open(f"assets/staff/username_.png", "rb") as f:
+                            with open(f"assets/staff/staff_background.png", "rb") as f:
                                 data = f.read()
                                 encoded = base64.b64encode(data)
                             data = "data:image/png;base64," + \
@@ -93,13 +92,10 @@ class Staff_Module:
                                         staff_role = st.selectbox(
                                             ":blue[**Role**]", ("Manager", "Staff", "Owner"))
                                     with row_3_1:
-                                        date_obj = table_staff['Date Of Birth'][index]
-                                        year = date_obj.year
-                                        month = date_obj.month
-                                        day = date_obj.day
-
                                         Date_of_birth = st.date_input(
-                                            ":blue[**Date Of Birth**]", datetime.date(year, month, day))
+                                            ":blue[**Date Of Birth**]", value = table_staff['Date Of Birth'][index],  min_value=datetime(1950, 1, 1), max_value= datetime(2050,1,1)  )
+                                        
+                                     
                                     with row_3_2:
                                         staff_username = st.text_input(
                                             ":blue[**Username**]", f"{table_staff['Username'][index]}", disabled=True)
@@ -127,13 +123,15 @@ class Staff_Module:
                                 if isUpdateSucess:
                                     st.success(
                                         "Staff information has been updated")
+                                    time.sleep(1)
+                                    st.experimental_rerun()
                                 if isRemove:
                                     st.success("Suspend staff successful")
                                     time.sleep(1)
                                     st.experimental_rerun()
                 if value and table_staff['Status'][index] == 'Suspend' :
                     active_button = st.button("Active this staff account",type="primary", key="active staff")
-                    st.markdown(f'''<h4 style = 'color: red;'>This account was suspended at {table_staff['Suspend at'][index]} </h4>''', unsafe_allow_html=True)
+                    st.warning(f"**This account was suspended at {table_staff['Suspend at'][index]}**", icon="⚠️")
 
                     if active_button:
                         isActiveSuccess = self.mydb.Update_suspended_staff(table_staff['Staff ID'][index])
@@ -148,7 +146,7 @@ class Staff_Module:
     def Add_a_staff(self):
         Add_staff_message = False
         DisplayTextCenter("Add A New Staff")
-        staff_data = self.mydb.get_staff_table()
+        staff_data = self.mydb.get_all_staff_username()
 
         with st.form("Add Staff Information"):
             with st.container():
@@ -170,7 +168,7 @@ class Staff_Module:
                         hashed_password = stauth.Hasher([password]).generate()
                 with rows_columns[2][0]:
                     Date_of_birth = st.date_input(
-                            ":blue[**Date of birth**]")
+                            ":blue[**Date of birth**]", min_value=datetime(1950, 1, 1), max_value= datetime(2050,1,1), value=datetime(2004,1,1))
                 with rows_columns[2][1]:
                     Role = st.selectbox(
                         ":blue[**Role**]", ("Manager", "Staff", "Owner"))
@@ -191,12 +189,12 @@ class Staff_Module:
                 else:
                     if check_password(password) == False:
                         st.error("Password must be at least 8 characters long and contain at least one number, and one special character")
-                    if check_valid_phone(Phone) and check_user_name(username, staff_data['Username']) and check_name_staff(Name):
+                    if check_valid_phone(Phone) and check_user_name(username, staff_data) and check_name_staff(Name):
                         Add_staff_message = self.mydb.Add_New_Staff(
                                 Name, Phone, username, hashed_password[0], Date_of_birth, Role, Address)
                     if check_valid_phone(Phone) == False:
                         st.error("Phone number is invalid")
-                    if  check_user_name(username, staff_data['Username']) == False:
+                    if  check_user_name(username, staff_data) == False:
                         st.error("The username already exists! Please choose another one")
                     if check_name_staff(Name) == False:
                         st.error("Staff name must be alphabet")
@@ -209,13 +207,13 @@ class Staff_Module:
             st.experimental_rerun()
 
 
-def Staff(mydb):
+def Staff(mydb, staff_id):
     View_staff_infor, Add_a_staff = st.tabs(
         ["**View staff information**", "**Add a staff**"])
     # init instance
     Staff_instance = Staff_Module(mydb)
     with View_staff_infor:
-        Staff_instance.view_staff_infor()
+        Staff_instance.view_staff_infor(staff_id)
     with Add_a_staff:
 
         Staff_instance.Add_a_staff()
