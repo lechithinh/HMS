@@ -33,9 +33,9 @@ def Dashboard(mydb):
 
 
     manager_card, staff_card, desk_card = st.columns(3)
-    manager_card.metric(label="Room Available", value=status_count["Available"], delta=-5)
-    staff_card.metric(label="Total Inventory", value=count_item,delta=5)
-    desk_card.metric(label="Total Staff", value=count_staff,delta=5)
+    manager_card.metric(label="Room Available", value=status_count["Available"])
+    staff_card.metric(label="Total Inventory", value=count_item)
+    desk_card.metric(label="Total Staff", value=count_staff)
     style_metric_cards(border_left_color='#F39D9D')
     
     
@@ -88,11 +88,14 @@ def Dashboard(mydb):
     # create two columns for charts
     fig_col1, fig_col2 = st.columns(2)
     with fig_col1:
+        st.markdown(f'''<h4 style = 'color: #0068c9; text-align: center; font-weight: bold;'>Chart of the revenue comparison <br> between two consecutive week</h4>''', unsafe_allow_html=True)
         chart_data = pd.DataFrame(data, index=week_day)
 
-        st.line_chart(chart_data)
+        
+        st.line_chart(chart_data, height=400)
 
     with fig_col2:
+        st.markdown(f'''<h4 style = 'color: #0068c9; text-align: center; font-weight: bold;'>Chart of the number of guests in the past 7 days  </h4>''', unsafe_allow_html=True)
         guest_char_Table = mydb.guest_chart()
         temp = []
         for item in guest_char_Table["check_in date"]:
@@ -103,8 +106,8 @@ def Dashboard(mydb):
             "Date": temp,
             "Total guest": guest_char_Table["num_guest"],
         })
-        st.write(alt.Chart(data, width=500, height=320).mark_bar().encode(x=alt.X("Date", sort=None),y="Total guest",))
-
+        chart = alt.Chart(data, height=400).mark_bar().encode(x=alt.X("Date", sort=None),y="Total guest",)
+        st.altair_chart(chart, use_container_width=True, theme="streamlit")
         
     st.divider()
     row_1_1,  row_1_2, row_1_3 = st.columns(3)
