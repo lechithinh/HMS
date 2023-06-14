@@ -115,9 +115,14 @@ class Staff_Module:
                                         updated_button = st.form_submit_button(
                                             "Update", type="primary")
                                         if updated_button:
-                                            isUpdateSucess = self.mydb.Update_One_Staff(
-                                                staff_name, staff_phone, staff_address, Date_of_birth, staff_username, staff_role, staff_id,
-                                            )
+                                            if check_valid_phone(staff_phone) == True and check_name_staff(staff_name) == True:
+                                                isUpdateSucess = self.mydb.Update_One_Staff(
+                                                    staff_name, staff_phone, staff_address, Date_of_birth, staff_username, staff_role, staff_id,
+                                                )
+                                            if check_valid_phone(staff_phone) == False:
+                                                st.error("Phone number is invalid")
+                                            if check_name_staff(staff_name) == False:
+                                                st.error("Staff name must be alphabet")
 
                                 if isUpdateSucess:
                                     st.success(
@@ -185,15 +190,15 @@ class Staff_Module:
                     st.error("Must enter full information!")
                 else:
                     if check_password(password) == False:
-                        st.error("Password must have at least 8 number, character and special character")
-                    elif check_valid_phone(Phone) and check_user_name(username, staff_data['Username']) and check_name_staff(Name):
+                        st.error("Password must be at least 8 characters long and contain at least one number, and one special character")
+                    if check_valid_phone(Phone) and check_user_name(username, staff_data['Username']) and check_name_staff(Name):
                         Add_staff_message = self.mydb.Add_New_Staff(
                                 Name, Phone, username, hashed_password[0], Date_of_birth, Role, Address)
-                    elif check_valid_phone(Phone) == False:
+                    if check_valid_phone(Phone) == False:
                         st.error("Phone number is invalid")
-                    elif  check_user_name(username, staff_data['Username']) == False:
+                    if  check_user_name(username, staff_data['Username']) == False:
                         st.error("The username already exists! Please choose another one")
-                    elif check_name_staff(Name) == False:
+                    if check_name_staff(Name) == False:
                         st.error("Staff name must be alphabet")
                                 
                                 
@@ -214,4 +219,5 @@ def Staff(mydb):
     with Add_a_staff:
 
         Staff_instance.Add_a_staff()
+
 

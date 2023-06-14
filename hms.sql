@@ -57,7 +57,7 @@ CREATE TABLE `Staff`(
     date_of_birth date DEFAULT NULL,
     `role` varchar(45) DEFAULT NULL,
     `password` varchar(100) DEFAULT NULL,
-    `status` varchar(45) default null,
+    `status` varchar(45) default 'Active',
 	created_at datetime default current_timestamp(),
     suspend_at datetime default null,
     primary key(staff_id)
@@ -117,9 +117,9 @@ CREATE TABLE `Bill`(
 
 #Only insert this 
 insert into staff(staff_name, phone_number, username, address, date_of_birth, `role`, `password`) values
-('Huynh Thien', 0832244567, 'huynhcongthien', 'Long an', '2003-5-28', 'Staff', '$2b$12$6nf/QuObvzgu50.d/pmUse1Go4aU6ToRpyfkWCnWN8l0ghIXgRbPK'),
-('Nguyen Minh Tri', 083776543, 'nguyenminhtri', 'Bien Hoa', '2003-6-29', 'Manager', '$2b$12$4LDW4JVt7HP5nLZzb3ImWenAFesqwCCgX0OaY5ZOnB4dKFf8ACTMy'),
-('Le Chi Thinh', 083772543, 'lechithinh', 'Ca Mau', '2003-5-12', 'Owner', '$2b$12$qhYvMNel/QlNYlV9PgHVe.tkokxmTzXBxpRAyYle.10G1xmlCbrH.');
+('Huynh Thien', 0832244567, 'huynhcongthien', 'Long an', '2003-5-28', 'Staff', '$2b$12$8FPgYSRdC5QKsNoBGSViL.h1a.4KqHs9A87Otwy3BDUVxyyDVdVq.'),
+('Nguyen Minh Tri', 083776543, 'nguyenminhtri', 'Bien Hoa', '2003-6-29', 'Manager', '$2b$12$3XlcfawEbZzNQftYml7hn.jyUe9n8t9tEEaTzh94Q55U8b6gRkH8K'),
+('Le Chi Thinh', 083772543, 'lechithinh', 'Ca Mau', '2003-5-12', 'Owner', '$2b$12$8pu2pjWDUD9952Gg86.lbuPWe3oT2FuuWxxUwmPhJ1ukJQGVkpVSq');
 
 
 
