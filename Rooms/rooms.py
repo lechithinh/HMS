@@ -47,13 +47,13 @@ class Rooms_Module:
     
                 update_col,_,_,remove_col = st.columns(4)
                 with update_col:
-                    Update_Room_Button = st.form_submit_button("Update the room", type = "primary") 
+                    Update_Room_Button = st.form_submit_button("Update", type = "primary") 
                 with remove_col:
                     if current_room_status == "Available":
                         disable = False
                     else:
                         disable = True
-                    Remove_Room_Button = st.form_submit_button("Remove the room", type='secondary', disabled=disable)
+                    Remove_Room_Button = st.form_submit_button("Remove", type='secondary', disabled=disable)
                
                 if Update_Room_Button:
                     with st.spinner('Processing...'):
@@ -92,7 +92,7 @@ class Rooms_Module:
         with checkin_column:
             with st.form("Room Checkin"):    
                 st.subheader(
-                f"INFORMATION: :blue[CHECKIN]")                                
+                f"INFORMATION: :blue[CHECK-IN]")                                
                 with st.container():
                     reservation_1_1, reservation_1_2 = st.columns(2)
                     reservation_2_1, reservation_2_2 = st.columns(2)
@@ -134,14 +134,14 @@ class Rooms_Module:
                     with date_1:
                         checkin_date = st.date_input("Check-in date", max_value=datetime.now(), min_value=datetime.now())
 
-                        checkin_time = st.time_input('Check-in time', value=datetime(now.year,now.month,now.day,hour=12))
+                        checkin_time = st.time_input('Check-in time', value= now)
                         checkin_datetime = datetime.combine(checkin_date, checkin_time)
                         
                     with date_2:
                         tomorrow =  now + timedelta(days=1)
                         #checkout date mặc định ngày hôm sau ngày checkin
                         checkout_date = st.date_input("Check-out date",value= tomorrow, min_value= tomorrow, max_value=datetime(2050,1,1))
-                        checkout_time = st.time_input("Check-out time",datetime(now.year,now.month,now.day,hour=12 ), disabled=True )
+                        checkout_time = st.time_input("Check-out time",datetime(now.year,now.month,now.day,hour=12 ) )
                         checkout_datetime = datetime.combine(checkout_date, checkout_time)
 
                     #với mỗi phòng có số lượng bed khác nhau sẽ có số lượng max adult, max children khác nhau
@@ -166,7 +166,7 @@ class Rooms_Module:
                             slider_list[idx] = st.slider(f"Number of {item_name}",0, inventory_table["remain"][idx])
 
 
-                checkin_button = st.form_submit_button("Check-in", type = "primary")
+                checkin_button = st.form_submit_button("Check in", type = "primary")
                 
                 if checkin_button:
                     with st.spinner('Processing...'):
@@ -277,7 +277,7 @@ class Rooms_Module:
                         first_guest_address = st.text_input(
                     "Address", f"{guest_room_data['address'][0]}")
                     with reservation_2_2:
-                        first_guest_dob = st.date_input("Date of Birth",value=guest_room_data['date_of_birth'][0])
+                        first_guest_dob = st.date_input("Date of Birth",value=guest_room_data['date_of_birth'][0], min_value=datetime(1950, 1, 1), max_value= datetime(2050,1,1) )
                         
                     if int(table['Max people'][index]) == 4:
                         with reservation_3_1:
@@ -290,8 +290,7 @@ class Rooms_Module:
                             second_guest_address = st.text_input(
                         "Address", f"{guest_room_data['address'][1]}", key="second guest address")
                         with reservation_4_2:
-                            second_guest_dob = st.text_input(
-                        "Date of Birth", f"{guest_room_data['date_of_birth'][1]}", key="second guest dob")
+                            second_guest_dob = st.date_input("Date of Birth",value=guest_room_data['date_of_birth'][1], min_value=datetime(1950, 1, 1), max_value= datetime(2050,1,1) )
                     
 
                     #ý tưởng: lấy 2 table là inventory table và order table (ds order của 1 phòng)
@@ -310,10 +309,10 @@ class Rooms_Module:
                     #Checkout and update button
                     checkout_col,_ ,_, update_col = st.columns(4)
                     with checkout_col:
-                        checkout_button = st.form_submit_button("Check-out", type = "primary", on_click=disable)
+                        checkout_button = st.form_submit_button("Check out", type = "primary", on_click=disable)
 
                     with update_col:
-                        updated_infor_button = st.form_submit_button("Update infor", type = "primary", disabled=st.session_state.disabled)
+                        updated_infor_button = st.form_submit_button("Update info", type = "primary", disabled=st.session_state.disabled)
                     
                     if checkout_button:
                         #total charge = room price + service price
@@ -486,7 +485,8 @@ class Rooms_Module:
                                 self.view_occupied_room(table, index, staff_id)
                 if value and table['is Active'][index] == 'FALSE':
                     active_button = st.button("Active this room",type="primary", key="active staff")
-                    st.markdown(f'''<h4 style = 'color: red;'>This room was removed at {table['Removed at'][index]} </h4>''', unsafe_allow_html=True)
+                    st.warning(f"**This room was removed at {table['Removed at'][index]}**" ,icon="⚠️")
+
 
                     if active_button:
                         isActiveSuccess = self.mydb.update_removed_room(table['Room ID'][index])
