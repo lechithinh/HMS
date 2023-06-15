@@ -1,17 +1,22 @@
-HMSpro - Hotel Management System
+# HMSpro - Hotel Management System
+
 HMSpro is a hotel management system developed using Python and the Streamlit library. It provides a user-friendly interface for managing various aspects of hotel operations, including room management, staff management, inventory management, dashboard visualization, and profile editing. This README file provides an overview of the application and instructions for getting started.
 
-Features
-Manage Rooms: Add, edit, and delete rooms, assign room types, set availability, and track occupancy.
-Manage Staff: Maintain a database of staff members, including their roles, contact information, and work schedules.
-Manage Inventory: Keep track of hotel inventory, such as supplies, equipment, and amenities.
-Dashboard: Visualize key metrics, such as room occupancy, revenue, and guest feedback, using interactive charts and graphs.
-Edit Profile: Allow users to update their personal information, including contact details and preferences.
-Technologies Used
-Programming Language: Python 
-Web Framework: Streamlit
-Database: MySql 
-Getting Started
+## Features
+
+- **Manage Rooms**: Add, edit, and delete rooms, assign room types, set availability, and track occupancy.
+- **Manage Staff**: Maintain a database of staff members, including their roles, contact information, and work schedules.
+- **Manage Inventory**: Keep track of hotel inventory, such as supplies, equipment, and amenities.
+- **Dashboard**: Visualize key metrics, such as room occupancy, revenue, and guest feedback, using interactive charts and graphs.
+- **Edit Profile**: Allow users to update their personal information, including contact details and preferences.
+
+## Technologies Used
+
+- **Programming Language**: [Python](https://www.python.org) 
+- **Web Framework**: [Streamlit](https://streamlit.io) 
+- **Database**: [MySql](https://www.sqlite.org) 
+
+## Getting Started
 To run the HMSpro application locally, follow these steps:
 
 Clone the repository:
